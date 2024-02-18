@@ -5,7 +5,10 @@ from src.config.db_config import Base
 class User(Base):
     __tablename__ = 'users'
 
-    email = Column(String, primary_key=True)
+    id_user = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    # para dejar el id_usuario como llave única y escalar con indice númerico, como TASK
+
+    email = Column(String,unique=True)
     username = Column(String, unique=True)
     password = Column(String)
 

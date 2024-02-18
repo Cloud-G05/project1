@@ -20,7 +20,7 @@ class Task(Base):
     input_file_path = Column(String)
     output_file_path = Column(String)
 
-    user_id = Column(String, ForeignKey("users.id"))
+    user_id = Column(Integer, ForeignKey("users.id")) #ajustando para ID númerico
 
     user = relationship('User', back_populates='tasks')
 

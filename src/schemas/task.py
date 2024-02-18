@@ -7,7 +7,7 @@ class TaskBase(BaseModel):
     input_file_path: str
     converted_file_ext: str
     name: str
-    user_id: str
+    id_user: int  #ajustando para id_user como integer
 
     class Config:
         orm_mode = True
@@ -16,7 +16,7 @@ class TaskBase(BaseModel):
                 "input_file_path": "path/to/file",
                 "converted_file_ext": "pdf",
                 "name": "task name",
-                "user_id": "60e3b2be-b29d-442c-b5ea-6337d0044a9e"
+                "id_user": "123"
             }
         }
 
@@ -38,7 +38,7 @@ class TaskRead(TaskBase):
                 "input_file_path": "path/to/file",
                 "converted_file_ext": "pdf",
                 "name": "task name",
-                "user_id": "60e3b2be-b29d-442c-b5ea-6337d0044a9e",
+                "id_user": "123",
                 "id": "4f21a77d-b8fa-47bb-8df6-b772a635bc19",
                 "status": "UPLOADED",
                 "time_stamp": "2021-07-07T00:00:00",
