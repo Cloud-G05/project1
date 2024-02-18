@@ -1,7 +1,7 @@
 from pydantic import BaseModel
-from typing import Optional, List
+from typing import Optional
 from src.schemas.task import TaskRead
-
+from typing import List
 
 class UserBase(BaseModel):
     password: str
@@ -43,7 +43,6 @@ class UserLogin(UserBase):
         }
 
 class UserRead(UserCreate):
-    id_user: int  # para tomar el id_user
     tasks: List[TaskRead]
 
     class Config:
@@ -58,7 +57,7 @@ class UserRead(UserCreate):
                         "input_file_path": "path/to/file",
                         "converted_file_ext": "pdf",
                         "name": "task name",
-                        "id_user": "123",
+                        "user_id": "60e3b2be-b29d-442c-b5ea-6337d0044a9e",
                         "id": "4f21a77d-b8fa-47bb-8df6-b772a635bc19",
                         "status": "UPLOADED",
                         "time_stamp": "2021-07-07T00:00:00",
