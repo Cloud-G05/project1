@@ -3,11 +3,17 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import SQLAlchemyError
 
-from settings import Settings
+from .settings import Settings
 
 settings = Settings()
 
-engine = create_engine(url=f"postgresql://{settings.DB_USER}:{settings.DB_PASSWORD}@{settings.DB_HOST}:{settings.DB_PORT}/{settings.DB_NAME}")
+DB_NAME = settings.DB_NAME
+DB_USER = settings.DB_USER
+DB_PASSWORD = settings.DB_PASSWORD
+DB_HOST = settings.DB_HOST
+DB_PORT = settings.DB_PORT
+
+engine = create_engine(url=f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}")
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
