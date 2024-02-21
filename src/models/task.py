@@ -10,7 +10,7 @@ class TaskStatus(enum.Enum):
 class Task(Base):
     __tablename__ = 'tasks'
 
-    id = Column(Integer, primary_key=True, index = True)
+    id = Column(String, primary_key=True, index = True)
     name = Column(String)
     original_file_ext = Column(String)
     converted_file_ext = Column(String)
@@ -20,7 +20,7 @@ class Task(Base):
     input_file_path = Column(String)
     output_file_path = Column(String)
 
-    user_id = Column(String, ForeignKey("users.id"))
+    user_email = Column(String, ForeignKey("users.email"))
 
     user = relationship('User', back_populates='tasks')
 
