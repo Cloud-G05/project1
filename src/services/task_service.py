@@ -2,7 +2,7 @@ from datetime import datetime
 import uuid
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
-from ..tasks import convert_to_pdf
+from celery_app.tasks import convert_to_pdf
 from src.schemas.task import TaskCreate, TaskRead
 from src.models.task import Task as TaskModel
 from src.services.user_service import get_user_by_email
@@ -44,8 +44,10 @@ def create_task(db: Session, task: TaskCreate) -> TaskRead:
     
     output_file_path="results/" + input_file_name.split(".")[0] + "." + task.converted_file_ext
 
+    task_result = convert_to_pdf.apply_async(args=[task.input_file_path, output_file_path])
+
     new_task = TaskModel(
-        id=str(uuid.uuid4()),
+        id=str(task_result.id),
         name = task.name,
         original_file_ext = input_file_extension,
         converted_file_ext = task.converted_file_ext,
@@ -58,8 +60,6 @@ def create_task(db: Session, task: TaskCreate) -> TaskRead:
     db.add(new_task)
     db.commit()
     db.refresh(new_task)
-
-    convert_to_pdf.delay(task.input_file_path, output_file_path)
 
     return new_task
 
