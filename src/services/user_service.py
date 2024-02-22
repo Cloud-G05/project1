@@ -36,7 +36,7 @@ def create_user(db: Session, user: UserCreate) -> UserCreate:
     return new_user
 
 def login_user(db: Session, user: UserLogin)->UserRead:
-    user = None
+    
     if user.username:
         user = get_user_by_username(db, user.username)
     elif user.email:
