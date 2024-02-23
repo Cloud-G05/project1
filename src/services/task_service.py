@@ -1,11 +1,13 @@
 from datetime import datetime
-import uuid
 from fastapi import HTTPException
+from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
 from celery_app.tasks import convert_to_pdf
 from src.schemas.task import TaskCreate, TaskRead
 from src.models.task import Task as TaskModel
 from src.services.user_service import get_user_by_email
+from src.services.user_task_service import get_tasks_by_user_email
+import os
 
 
 def get_task_by_id(db: Session, task_id: str) -> TaskRead:
@@ -66,7 +68,39 @@ def create_task(db: Session, task: TaskCreate) -> TaskRead:
 
 def delete_task(db: Session, task_id: str) -> TaskRead:
     task = get_task_by_id(db, task_id)
-    db.delete(task)
+    if not task.available:
+        raise HTTPException(status_code=404, detail="Task not found")
+    output_path_relative_to_back = task.output_file_path.split("../")[-1]
+    input_path_relative_to_back = task.input_file_path.split("../")[-1]
+    if not os.path.exists(output_path_relative_to_back) or not os.path.exists(input_path_relative_to_back):
+        raise HTTPException(status_code=404, detail="File not found")
+    os.remove(task.output_file_path)
+    os.remove(task.input_file_path)
+    task.available = False
+    # db.delete(task)
     db.commit()
+    db.refresh(task)
 
 
+def download_file(filename: str, db: Session, Authorize) -> TaskRead:
+    user = get_user_by_email(db, Authorize.get_jwt_subject())
+    
+    if ".pdf" in filename:
+        filename_path = "../results/" + filename
+        task = db.query(TaskModel).filter(TaskModel.output_file_path == filename_path).first()
+        path_relative_to_back = "results/" + filename
+    else:
+        filename_path = "../uploads/" + filename
+        task = db.query(TaskModel).filter(TaskModel.input_file_path == filename_path).first()
+        path_relative_to_back = "uploads/" + filename
+    
+    if not task:
+        raise HTTPException(status_code=404, detail="Task not found")
+    if user.email != task.user_email:
+        raise HTTPException(status_code=404, detail="User not authorized to download this file")
+    if not task.available:
+        raise HTTPException(status_code=404, detail="Task not found")
+    if not os.path.exists(path_relative_to_back):
+        raise HTTPException(status_code=404, detail="File not found")
+    
+    return FileResponse(path_relative_to_back, filename = filename)
