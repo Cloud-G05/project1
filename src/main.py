@@ -1,7 +1,7 @@
 from fastapi import FastAPI, status, Request
 from fastapi.responses import RedirectResponse, JSONResponse
 from src.config.settings import Settings
-from src.routers import user, task
+from src.routers import user, task, file
 from src.config.db_config import engine, Base
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi_jwt_auth import AuthJWT
@@ -27,6 +27,7 @@ def exception_handler(request: Request, exc: AuthJWTException):
 
 app.include_router(user.router)
 app.include_router(task.router)
+app.include_router(file.router)
 
 app.add_middleware(
     CORSMiddleware,
