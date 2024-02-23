@@ -24,6 +24,8 @@ def create_user(db: Session, user: UserCreate) -> UserCreate:
         raise HTTPException(status_code=409, detail ="Email already exists")
 
     password_provided(user.password)
+    if len(user.password) < 8:
+        raise HTTPException(status_code=404, detail="Password must be at least 8 characters long")
     
     new_user = UserModel(
         username=user.username,
