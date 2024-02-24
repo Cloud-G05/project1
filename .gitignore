@@ -1,0 +1,4 @@
+/back/env
+/celery_app/env
+
+.DS_Store
