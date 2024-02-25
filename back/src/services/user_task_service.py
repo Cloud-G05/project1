@@ -1,7 +1,9 @@
 from sqlalchemy.orm import Session
-from src.services.user_service import get_user_by_email
-from src.models.user import User
 from fastapi_jwt_auth import AuthJWT
+import sys
+sys.path.append('../')
+from back.src.services.user_service import get_user_by_email
+from back.src.models.user import User
 
 
 

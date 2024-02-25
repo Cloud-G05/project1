@@ -1,6 +1,5 @@
 from fastapi_jwt_auth import AuthJWT
 from fastapi import HTTPException
-from sqlalchemy.orm import Session
 
 def authorized_user_email(Authorize: AuthJWT, user_email: str) -> str:
     print(Authorize.get_jwt_subject())

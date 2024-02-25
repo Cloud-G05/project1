@@ -1,11 +1,12 @@
 from fastapi import APIRouter, Depends
 from fastapi.security import HTTPAuthorizationCredentials
-from sqlalchemy.orm import Session
-from src.routers.user import get_bearer_token
-from src.config.db_config import get_db
 from fastapi_jwt_auth import AuthJWT
-import src.services.task_service as service
-from src.services.authorization_service import authorized_user_email
+from sqlalchemy.orm import Session
+import sys
+sys.path.append('../')
+from back.src.routers.user import get_bearer_token
+from back.src.config.db_config import get_db
+import back.src.services.task_service as service
 
 router = APIRouter(
     prefix="/files",

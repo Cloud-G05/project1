@@ -1,9 +1,9 @@
 from sqlalchemy.orm import Session
-from src.models.user import User as UserModel
-from src.schemas.user import UserCreate, UserRead, UserLogin
-from src.models.task import Task as TaskModel
-from typing import List
 from fastapi import HTTPException
+import sys
+sys.path.append('../')
+from back.src.models.user import User as UserModel
+from back.src.schemas.user import UserCreate, UserRead, UserLogin
 
 def get_user_by_username(db: Session, username: str) -> UserRead:
     user = db.query(UserModel).filter(UserModel.username == username).first()

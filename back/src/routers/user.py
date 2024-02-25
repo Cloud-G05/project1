@@ -1,14 +1,12 @@
-from typing import List, Annotated
-from fastapi import APIRouter, Depends, HTTPException, Body
-from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
-from sqlalchemy.orm import Session
-from src.schemas.user import UserRead, UserCreate, UserLogin
-from src.schemas.task import TaskRead
-import src.services.user_service as service
-import src.services.user_task_service as user_task_service
-import src.services.task_service as task_service
-from src.config.db_config import get_db
+from fastapi import APIRouter, Depends, Body
+from fastapi.security import HTTPBearer
 from fastapi_jwt_auth import AuthJWT
+from sqlalchemy.orm import Session
+import sys
+sys.path.append('../')
+from back.src.schemas.user import UserCreate, UserLogin
+import back.src.services.user_service as service
+from back.src.config.db_config import get_db
 
 
 router = APIRouter(

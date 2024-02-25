@@ -2,14 +2,13 @@ from datetime import datetime
 from fastapi import HTTPException
 from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
-from src.schemas.task import TaskCreate, TaskRead
-from src.models.task import Task as TaskModel
-from src.services.user_service import get_user_by_email
-from src.services.user_task_service import get_tasks_by_user_email
 import os
 import sys
 sys.path.append('../')
 from celery_app.tasks import convert_to_pdf
+from back.src.schemas.task import TaskCreate, TaskRead
+from back.src.services.user_service import get_user_by_email
+from back.src.models.task import Task as TaskModel
 
 
 def get_task_by_id(db: Session, task_id: str) -> TaskRead:

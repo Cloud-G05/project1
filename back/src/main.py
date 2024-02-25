@@ -1,12 +1,14 @@
 from fastapi import FastAPI, status, Request
 from fastapi.responses import RedirectResponse, JSONResponse
-from src.config.settings import Settings
-from src.routers import user, task, file
-from src.config.db_config import engine, Base
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi_jwt_auth import AuthJWT
 from fastapi_jwt_auth.exceptions import AuthJWTException
-from src.config.settings import AuthSettings
+import sys
+sys.path.append('../')
+from back.src.config.settings import Settings
+from back.src.routers import user, task, file
+from back.src.config.db_config import engine, Base
+from back.src.config.settings import AuthSettings
 
 
 settings = Settings()

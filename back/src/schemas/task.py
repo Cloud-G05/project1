@@ -1,7 +1,9 @@
 from pydantic import BaseModel
 from datetime import datetime
-from src.models.task import TaskStatus
 from typing import Optional
+import sys
+sys.path.append('../')
+from back.src.models.task import TaskStatus
 
 class TaskBase(BaseModel):
     input_file_path: str

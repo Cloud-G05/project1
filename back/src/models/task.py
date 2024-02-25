@@ -1,9 +1,9 @@
 from sqlalchemy import Column, ForeignKey, String, Integer, DateTime, Enum, Boolean
 from sqlalchemy.orm import relationship
-import sys
-sys.path.append("../")
-from back.src.config.db_config import Base
 import enum
+import sys
+sys.path.append('../')
+from back.src.config.db_config import Base
 
 class TaskStatus(enum.Enum):
     UPLOADED = 'UPLOADED'

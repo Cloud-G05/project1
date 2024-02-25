@@ -1,6 +1,8 @@
 from sqlalchemy import Column, String
 from sqlalchemy.orm import relationship
-from src.config.db_config import Base
+import sys
+sys.path.append('../')
+from back.src.config.db_config import Base
 
 class User(Base):
     __tablename__ = 'users'

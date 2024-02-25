@@ -1,7 +1,9 @@
 from pydantic import BaseModel
 from typing import Optional
-from src.schemas.task import TaskRead
 from typing import List
+import sys
+sys.path.append('../')
+from back.src.schemas.task import TaskRead
 
 class UserBase(BaseModel):
     password: str
