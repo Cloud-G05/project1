@@ -1,4 +1,5 @@
 from datetime import datetime
+import shutil
 from fastapi import HTTPException
 from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
@@ -45,9 +46,9 @@ def create_task(db: Session, task: TaskCreate) -> TaskRead:
     if not user:
         raise HTTPException(status_code= 404, detail="User email does not exist")
     
-    output_file_path="results/" + input_file_name.split(".")[0] + "." + task.converted_file_ext
-
-    task_result = convert_to_pdf.apply_async(args=[task.input_file_path, output_file_path])
+    output_file_path="../back/results/" + input_file_name.split(".")[0] + "." + task.converted_file_ext
+    upload_file(task.input_file_path, "uploads")
+    task_result = convert_to_pdf.apply_async(args=["../back/uploads/"+input_file_name, output_file_path])
 
     new_task = TaskModel(
         id=str(task_result.id),
@@ -55,7 +56,7 @@ def create_task(db: Session, task: TaskCreate) -> TaskRead:
         original_file_ext = input_file_extension,
         converted_file_ext = task.converted_file_ext,
         time_stamp = datetime.now(),
-        input_file_path=task.input_file_path,
+        input_file_path="../uploads/"+input_file_name,
         output_file_path=output_file_path,
         user_email = task.user_email
     )
@@ -65,6 +66,17 @@ def create_task(db: Session, task: TaskCreate) -> TaskRead:
     db.refresh(new_task)
 
     return new_task
+
+
+def upload_file(source_path: str, destination_directory: str):
+    # Create the destination directory if it doesn't exist
+    os.makedirs(destination_directory, exist_ok=True)
+        
+    # Get the file name from the source path
+    file_name = os.path.basename(source_path)
+    # Copy the file to the destination directory
+    destination_path = os.path.join(destination_directory, file_name)
+    shutil.copy(source_path, destination_path)
 
 
 def delete_task(db: Session, task_id: str) -> TaskRead:
