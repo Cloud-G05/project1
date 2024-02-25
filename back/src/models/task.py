@@ -1,6 +1,8 @@
 from sqlalchemy import Column, ForeignKey, String, Integer, DateTime, Enum, Boolean
 from sqlalchemy.orm import relationship
-from src.config.db_config import Base
+import sys
+sys.path.append("../")
+from back.src.config.db_config import Base
 import enum
 
 class TaskStatus(enum.Enum):

@@ -4,14 +4,16 @@ from celery.signals import task_success
 import sys
 import psycopg2
 sys.path.append('../')
-from src.models.task import TaskStatus
+from back.src.models.task import TaskStatus
+from back.src.config.settings import Settings
 
 celery_app = Celery('tasks', broker='redis://localhost:6379/0', backend='redis://localhost:6379/0')
+settings = Settings()
 
-DB_NAME = "file_converter"
-DB_USER = "postgres"
-DB_PASSWORD = 123456
-DB_HOST = "localhost"
+DB_NAME = settings.DB_NAME
+DB_USER = settings.DB_USER
+DB_PASSWORD = settings.DB_PASSWORD
+DB_HOST =settings.DB_HOST
 
 def update_task_status(task_id, status):#
     try:
