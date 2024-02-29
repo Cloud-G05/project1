@@ -5,12 +5,13 @@ from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
 import os
 import sys
+from celery import Celery
 sys.path.append('../')
-from celery_app.tasks import convert_to_pdf
 from back.src.schemas.task import TaskCreate, TaskRead
 from back.src.services.user_service import get_user_by_email
 from back.src.models.task import Task as TaskModel
 
+celery_app = Celery('tasks', broker='redis://redis:6379/0', backend='redis://redis:6379/0')
 
 def get_task_by_id(db: Session, task_id: str) -> TaskRead:
     task = db.query(TaskModel).filter(TaskModel.id == task_id).first()
@@ -46,10 +47,10 @@ def create_task(db: Session, task: TaskCreate) -> TaskRead:
     if not user:
         raise HTTPException(status_code= 404, detail="User email does not exist")
     
-    output_file_path="../back/results/" + input_file_name.split(".")[0] + "." + task.converted_file_ext
-    upload_file(task.input_file_path, "uploads")
-    task_result = convert_to_pdf.apply_async(args=["../back/uploads/"+input_file_name, output_file_path])
-
+    output_file_path="/back/results/" + input_file_name.split(".")[0] + "." + task.converted_file_ext
+    upload_file(task.input_file_path, "/back/uploads")
+    #task_result = convert_to_pdf.apply_async(args=["../back/uploads/"+input_file_name, output_file_path])
+    task_result = celery_app.send_task('tasks.convert_to_pdf', args=["/back/uploads/"+input_file_name, output_file_path])
     new_task = TaskModel(
         id=str(task_result.id),
         name = task.name,
@@ -67,9 +68,8 @@ def create_task(db: Session, task: TaskCreate) -> TaskRead:
 
     return new_task
 
-
 def upload_file(source_path: str, destination_directory: str):
-    # Create the destination directory if it doesn't exist
+
     os.makedirs(destination_directory, exist_ok=True)
         
     # Get the file name from the source path
