@@ -1,0 +1,17 @@
+.header {
+    flex-grow: 1;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 100;
+    right: 0px;
+    left: 0px;
+}
+
+.first-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 4px;
+}
