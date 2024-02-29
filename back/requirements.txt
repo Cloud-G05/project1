@@ -11,3 +11,4 @@ redis==5.0.1
 Celery==5.3.6
 psycopg2==2.9.9
 psycopg2-binary==2.9.9
+python-multipart==0.0.5
