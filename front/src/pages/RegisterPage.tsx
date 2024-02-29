@@ -19,9 +19,14 @@ import React from "react";
 const Register = () => {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
-    const [profile_picture, setProfilePicture] = useState("/broken-image.jpg");
-    //setProfilePicture("/broken-image.jpg");
+    const [email, setEmail] = useState("user@outlook.com");
+    //setEmail("/broken-image.jpg");
     const handleRegister = async () => {
+        if (password.length < 8) {
+            alert("La contraseña debe tener al menos 8 caracteres");
+            return;
+        }
+    
         const response = await fetch("http://localhost:8000/users/", {
             method: "POST",
             headers: {
@@ -30,16 +35,24 @@ const Register = () => {
             body: JSON.stringify({
                 username: username,
                 password: password,
-                profile_picture: profile_picture,
+                email: email,
             }),
         });
 
+    
         if (response.status === 201) {
             window.location.href = "/";
         } else {
-            alert("Usuario o contraseña incorrectos");
+            if (response.status === 409) {
+                window.location.href = "/register";
+                const responseBody = await response.json();
+                alert(responseBody.detail);
+            } else {
+                alert("Algo salió mal");
+            }    
         }
     };
+    
 
     return (
         <>
@@ -90,29 +103,15 @@ const Register = () => {
                                 <TextField
                                     required
                                     fullWidth
-                                    id="profile_picture"
-                                    label="TextField"
-                                    name="username"
-                                    value={profile_picture}
-                                    type={"url"}
+                                    id="email"
+                                    label="Email"
+                                    name="email"
+                                    value={email}
+                                    type="email"
                                     onChange={(e) =>
-                                        setProfilePicture(e.target.value)
+                                        setEmail(e.target.value)
                                     }
                                 />
-                                {/* <Button
-                                    component="label"
-                                    variant="contained"
-                                    startIcon={<CloudUploadIcon />}
-                                >
-                                    Upload picture
-                                    <VisuallyHiddenInput
-                                        type="file"
-                                        value={profile_picture}
-                                        onChange={(e) =>
-                                            setProfilePicture(e.target.value)
-                                        }
-                                    /> 
-                                </Button> */}
                             </Grid>
                         </Grid>
                         <Button

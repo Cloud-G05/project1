@@ -4,13 +4,15 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import DeleteIcon from "@mui/icons-material/Delete";
-import EditIcon from "@mui/icons-material/Edit";
+import DownloadIcon from "@mui/icons-material/Download";
 
 interface ThreeDotsProps {
     setOpenPopUpEditTask: React.Dispatch<React.SetStateAction<boolean>>;
     setIsTaskUpdate: React.Dispatch<React.SetStateAction<boolean>>;
     task_id: string;
     reloadTasks: () => void;
+    input_file_path: string;
+    output_file_path: string;
 }
 
 export default function ThreeDots({
@@ -18,6 +20,8 @@ export default function ThreeDots({
     setIsTaskUpdate,
     task_id,
     reloadTasks,
+    input_file_path,
+    output_file_path
 }: ThreeDotsProps) {
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
@@ -26,15 +30,16 @@ export default function ThreeDots({
         setAnchorEl(event.currentTarget);
     };
 
-    const handleClickEditTask = () => {
-        setOpenPopUpEditTask(true);
-        setAnchorEl(null);
-        setIsTaskUpdate(true);
-        localStorage.setItem("task_id", task_id);
-    };
-
     const handleClickDeleteTask = () => {
         deleteTask({ task_id, reloadTasks });
+    };
+
+    const handleDownloadInput = () => {
+        downloadInputFile(input_file_path);
+    };
+
+    const handleDownloadOutput = () => {
+        downloadOutputFile(output_file_path);
     };
 
     const handleClose = () => {
@@ -62,9 +67,13 @@ export default function ThreeDots({
                 open={open}
                 onClose={handleClose}
             >
-                <MenuItem onClick={handleClickEditTask}>
-                    <EditIcon />
-                    {"Edit task"}
+                <MenuItem onClick={handleDownloadInput}>
+                    <DownloadIcon />
+                    {"Download org"}
+                </MenuItem>
+                <MenuItem onClick={handleDownloadOutput}>
+                    <DownloadIcon />
+                    {"Download pdf"}
                 </MenuItem>
                 <MenuItem onClick={handleClickDeleteTask}>
                     <IconButton aria-label="delete">
@@ -94,5 +103,63 @@ const deleteTask = async ({ task_id, reloadTasks }: deleteTaskProps) => {
         reloadTasks();
     } else {
         alert("Failed to delete task. Please try again.");
+    }
+};
+
+const downloadInputFile = async (input_file_path: string) => {
+    const fileName = input_file_path.split('/').pop();
+    const token = localStorage.getItem("token");
+    const response = await fetch(`http://localhost:8000/files/${fileName}`, {
+        method: 'GET',
+        headers: {
+            'Authorization': 'Bearer ' + token, // Si necesitas enviar un token de autenticación
+        },
+    });
+
+    if (response.ok) {
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(new Blob([blob]));
+        const link = document.createElement('a');
+        link.href = url;
+        if(fileName!=null){
+            link.setAttribute('download', fileName);
+            document.body.appendChild(link);
+            link.click();
+            // Verificar si el nodo padre existe antes de intentar eliminar el enlace
+            if (link.parentNode) {
+            link.parentNode.removeChild(link);
+        }
+        }     
+    } else {
+        console.error('Error al descargar el archivo');
+    }
+};
+
+const downloadOutputFile = async (output_file_path: string) => {
+    const fileName = output_file_path.split('/').pop();
+    const token = localStorage.getItem("token");
+    const response = await fetch(`http://localhost:8000/files/${fileName}`, {
+        method: 'GET',
+        headers: {
+            'Authorization': 'Bearer ' + token, // Si necesitas enviar un token de autenticación
+        },
+    });
+
+    if (response.ok) {
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(new Blob([blob]));
+        const link = document.createElement('a');
+        link.href = url;
+        if(fileName!=null){
+            link.setAttribute('download', fileName);
+            document.body.appendChild(link);
+            link.click();
+            // Verificar si el nodo padre existe antes de intentar eliminar el enlace
+            if (link.parentNode) {
+            link.parentNode.removeChild(link);
+        }
+        }     
+    } else {
+        console.error('Error al descargar el archivo');
     }
 };

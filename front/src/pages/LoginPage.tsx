@@ -37,9 +37,8 @@ const LoginPage = () => {
             const data = await response.json();
             //setToken(data.access_token);
             localStorage.setItem("token", data.access_token);
-            localStorage.setItem("user_id", data.user_id);
             localStorage.setItem("username", username);
-            localStorage.setItem("profile_picture", data.profile_picture);
+            localStorage.setItem("user_email", data.email);
         } else {
             alert("Usuario o contraseña incorrectos");
         }

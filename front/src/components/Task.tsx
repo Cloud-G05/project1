@@ -18,6 +18,8 @@ interface TaskProps {
     task_details: TaskDetails;
     task_id: string;
     reloadTasks: () => void;
+    input_file_path: string;
+    output_file_path: string;
 }
 
 const Task = ({
@@ -26,6 +28,8 @@ const Task = ({
     task_details,
     task_id,
     reloadTasks,
+    input_file_path,
+    output_file_path
 }: TaskProps) => {
     return (
         <div className="task">
@@ -37,7 +41,7 @@ const Task = ({
                             variant="h5"
                             sx={{ flexGrow: 1 }}
                         >
-                            {task_details.text}
+                            {task_details.name}
                         </Typography>
                         <TaskButtons
                             setOpenPopUpEditTask={setOpenPopUpEditTask}
@@ -45,6 +49,8 @@ const Task = ({
                             task_details={task_details}
                             task_id={task_id}
                             reloadTasks={reloadTasks}
+                            input_file_path={input_file_path}
+                            output_file_path={output_file_path}
                         />
                     </CardContent>
                 </Box>
@@ -53,6 +59,8 @@ const Task = ({
                     setIsTaskUpdate={setIsTaskUpdate}
                     task_id={task_id}
                     reloadTasks={reloadTasks}
+                    input_file_path={input_file_path}
+                    output_file_path={output_file_path}
                 />
             </Card>
         </div>
@@ -64,45 +72,17 @@ const TaskButtons = ({
     setIsTaskUpdate,
     task_details,
     task_id,
+    input_file_path,
+    output_file_path
 }: TaskProps) => {
-    const [categoryName, setCategoryName] = useState<string>("");
 
-    useEffect(() => {
-        const getCategoryName = async () => {
-            try {
-                const response = await fetch(
-                    `http://localhost:8000/categories/${task_details.category_id}`,
-                    {
-                        method: "GET",
-                        headers: {
-                            "Content-Type": "application/json",
-                            Authorization: `Bearer ${localStorage.getItem(
-                                "token"
-                            )}`,
-                        },
-                    }
-                );
-                if (response.status === 200) {
-                    const data = await response.json();
-                    setCategoryName(data.name);
-                } else {
-                    setCategoryName("Category not found");
-                }
-            } catch (error) {
-                console.error("Error fetching category name:", error);
-                setCategoryName("Category not found");
-            }
-        };
-
-        getCategoryName();
-    }, [task_details.category_id]);
+    
 
     return (
         <Stack spacing={2} direction="row">
             {[
-                task_details.forseen_end_date,
-                categoryName,
-                task_details.state,
+                task_details.converted_file_ext,
+                task_details.status,
             ].map((text) => (
                 <Chip key={text} label={text} />
             ))}

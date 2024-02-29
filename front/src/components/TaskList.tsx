@@ -4,12 +4,15 @@ import React from "react";
 
 export interface TaskDetails {
     id: string;
-    text: string;
-    creation_date: string;
-    forseen_end_date: string;
-    state: string;
-    user_id: string;
-    category_id: string;
+    name: string;
+    original_file_ext: string;
+    converted_file_ext: string;
+    available: boolean;
+    status: string;
+    time_stamp: Date;
+    input_file_path: string;
+    output_file_path: string;
+    user_email: string;
 }
 
 interface TaskListProps {
@@ -36,6 +39,8 @@ const TaskList = ({
                             task_details={task}
                             task_id={task.id}
                             reloadTasks={reloadTasks}
+                            input_file_path={task.input_file_path}
+                            output_file_path={task.output_file_path}
                         />
                     </ListItem>
                 ))}
