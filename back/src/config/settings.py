@@ -6,7 +6,7 @@ class Settings(BaseSettings):
     DB_NAME = "file_converter"
     DB_USER = "postgres"
     DB_PASSWORD = '123456'
-    DB_HOST = "localhost"
+    DB_HOST = "postgres"
     DB_PORT = '5432'
 
 class AuthSettings(BaseSettings):

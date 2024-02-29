@@ -4,16 +4,14 @@ from celery.signals import task_success
 import sys
 import psycopg2
 sys.path.append('../')
-from back.src.models.task import TaskStatus
-from back.src.config.settings import Settings
+#from back.src.models.task import TaskStatus
 
-celery_app = Celery('tasks', broker='redis://localhost:6379/0', backend='redis://localhost:6379/0')
-settings = Settings()
+celery_app = Celery('tasks', broker='redis://redis:6379/0', backend='redis://redis:6379/0')
 
-DB_NAME = settings.DB_NAME
-DB_USER = settings.DB_USER
-DB_PASSWORD = settings.DB_PASSWORD
-DB_HOST =settings.DB_HOST
+DB_NAME = "file_converter"
+DB_USER = "postgres"
+DB_PASSWORD = "123456"
+DB_HOST = "postgres"
 
 def update_task_status(task_id, status):#
     try:
@@ -25,7 +23,7 @@ def update_task_status(task_id, status):#
         )
         cursor = conn.cursor()
         cursor.execute(
-            f"UPDATE tasks SET status = '{status.value}' WHERE id = '{task_id}'"
+            f"UPDATE tasks SET status = '{status}' WHERE id = '{task_id}'"
         )
         conn.commit()
     except psycopg2.Error as e:
@@ -51,7 +49,7 @@ def handle_task_success(sender, **kwargs):
     if sender:
         task_id = sender.request.id
         print(f'Task {task_id} completed successfully.')
-        update_task_status(task_id, TaskStatus.PROCESSED)
+        update_task_status(task_id, "PROCESSED")
     else:
         print('No sender object found.')
 
