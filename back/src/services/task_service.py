@@ -48,7 +48,7 @@ def create_task(db: Session, task: TaskCreate) -> TaskRead:
         raise HTTPException(status_code= 404, detail="User email does not exist")
     
     output_file_path="/back/results/" + input_file_name.split(".")[0] + "." + task.converted_file_ext
-    upload_file(task.input_file_path, "/back/uploads")
+    save_file(task.input_file_path, "/back/uploads")
     #task_result = convert_to_pdf.apply_async(args=["../back/uploads/"+input_file_name, output_file_path])
     task_result = celery_app.send_task('tasks.convert_to_pdf', args=["/back/uploads/"+input_file_name, output_file_path])
     new_task = TaskModel(
@@ -57,7 +57,7 @@ def create_task(db: Session, task: TaskCreate) -> TaskRead:
         original_file_ext = input_file_extension,
         converted_file_ext = task.converted_file_ext,
         time_stamp = datetime.now(),
-        input_file_path="../uploads/"+input_file_name,
+        input_file_path="/back/uploads/"+input_file_name,
         output_file_path=output_file_path,
         user_email = task.user_email
     )
@@ -68,7 +68,7 @@ def create_task(db: Session, task: TaskCreate) -> TaskRead:
 
     return new_task
 
-def upload_file(source_path: str, destination_directory: str):
+def save_file(source_path: str, destination_directory: str):
 
     os.makedirs(destination_directory, exist_ok=True)
         
@@ -77,7 +77,7 @@ def upload_file(source_path: str, destination_directory: str):
     # Copy the file to the destination directory
     destination_path = os.path.join(destination_directory, file_name)
     shutil.copy(source_path, destination_path)
-
+    
 
 def delete_task(db: Session, task_id: str) -> TaskRead:
     task = get_task_by_id(db, task_id)
@@ -89,6 +89,8 @@ def delete_task(db: Session, task_id: str) -> TaskRead:
         raise HTTPException(status_code=404, detail="File not found")
     os.remove(task.output_file_path)
     os.remove(task.input_file_path)
+    input_filename = task.input_file_path.split("/")[-1]
+    os.remove("/back/uploadsCopy/" + input_filename)
     task.available = False
     # db.delete(task)
     db.commit()
@@ -99,11 +101,11 @@ def download_file(filename: str, db: Session, Authorize) -> TaskRead:
     user = get_user_by_email(db, Authorize.get_jwt_subject())
     
     if ".pdf" in filename:
-        filename_path = "../results/" + filename
+        filename_path = "/back/results/" + filename
         task = db.query(TaskModel).filter(TaskModel.output_file_path == filename_path).first()
         path_relative_to_back = "results/" + filename
     else:
-        filename_path = "../uploads/" + filename
+        filename_path = "/back/uploads/" + filename
         task = db.query(TaskModel).filter(TaskModel.input_file_path == filename_path).first()
         path_relative_to_back = "uploads/" + filename
     
@@ -116,4 +118,4 @@ def download_file(filename: str, db: Session, Authorize) -> TaskRead:
     if not os.path.exists(path_relative_to_back):
         raise HTTPException(status_code=404, detail="File not found")
     
-    return FileResponse(path_relative_to_back, filename = filename)
+    return FileResponse(filename_path, filename = filename)
