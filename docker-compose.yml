@@ -13,6 +13,9 @@ services:
             REDIS_URL: redis://redis:6379/0
         ports:
             - "8000:8000"
+        volumes:
+            - uploaded-files:/back/uploads
+            - converted-files:/back/results
 
     postgres:
         image: postgres
@@ -45,8 +48,20 @@ services:
             REDIS_HOST: redis
             REDIS_PORT: "6379"
             DATABASE_URL: postgres://postgres:123456@postgres:5432/file_converter
+        volumes:
+            - uploaded-files:/back/uploads
+            - converted-files:/back/results
+
+    frontend:
+        build:
+            context: ./front
+            dockerfile: Dockerfile
+        ports:
+            - "3000:3000"
 
 volumes:
     redis-data:
     postgres-data:
         driver: local
+    converted-files:
+    uploaded-files:
