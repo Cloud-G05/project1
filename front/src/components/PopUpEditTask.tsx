@@ -47,17 +47,17 @@ const PopUpEditTask = ({
   const [converted_file_ext, setConverted_file_ext] = React.useState("pdf");
   const [file, setFile] = React.useState<File | null>(null); // Nuevo estado para el archivo
 
-  const handleClick = () => {
+  const handleClick = async () => {
     setOpenPopUpEditTask(false);
     if(file!=null){
-        // uploadFile({newFile: file, reloadTasks})
+        await uploadFile({newFile: file, reloadTasks})
         const task: TaskCreate = {
             input_file_path: input_file_path + file.name,
             name: name,
             converted_file_ext: converted_file_ext,
             user_email: localStorage.getItem("user_email")!,
           };
-          createTask({ newTask: task, reloadTasks });
+          await createTask({ newTask: task, reloadTasks });
     } else {
         alert("El campo del archivo está vacío")
     }
@@ -146,7 +146,7 @@ interface createFileProps {
 const uploadFile = async ({ newFile, reloadTasks }: createFileProps) => {
   const formData = new FormData(); // Crear objeto FormData
   formData.append("file", newFile);
-  const response = await fetch("http://localhost:8000/tasks/", {
+  const response = await fetch("http://localhost:8000/files/uploadfile", {
     method: "POST",
     headers: {
       Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -156,7 +156,6 @@ const uploadFile = async ({ newFile, reloadTasks }: createFileProps) => {
 
   if (response.ok) {
     console.log("Archivo enviado exitosamente.");
-    reloadTasks();
   } else {
     console.error("Error al enviar el archivo.");
   }
