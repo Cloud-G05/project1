@@ -15,7 +15,7 @@ const Header = () => {
                         justifyContent: "space-between",
                     }}
                 >
-                    <LogoTaskManager taskManagerText="TaskManager" />
+                    <LogoTaskManager taskManagerText="FileConverter" />
                     <AccountMenu />
                 </Toolbar>
             </AppBar>

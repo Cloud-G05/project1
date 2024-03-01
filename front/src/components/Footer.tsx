@@ -15,7 +15,7 @@ const Footer = () => {
                 }}
             >
                 {
-                    "Manage your tasks effortlessly with TaskManager. Organize, prioritize, and stay productive."
+                    "Convert your files effortlessly with FileConverter. Convert, organize and achieve."
                 }
             </Typography>
         </Box>
