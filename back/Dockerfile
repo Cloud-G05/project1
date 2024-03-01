@@ -1,9 +1,22 @@
-FROM python:3.11
+FROM ubuntu
 
-# RUN apt-get update \
-#     && apt-get install -y curl git python3.11 python3-pip
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update && apt-get upgrade -y
+
+RUN apt-get install -y python3.11 python3-pip
+
+RUN apt-get update && apt-get upgrade -y
+
+# Install dependencies
+RUN apt-get install -y libreoffice unoconv && \
+    pip3 install unoconv
+
 
 COPY ./requirements.txt /back/requirements.txt
+
+# # Instalar psycopg2-binary
+RUN apt install libpq-dev python3-dev -y
 
 RUN pip3 install --no-cache-dir -r /back/requirements.txt
 
