@@ -19,11 +19,16 @@ import React from "react";
 const Register = () => {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
+    const [passwordConfirmation, setPasswordConfirmation] = useState("");
     const [email, setEmail] = useState("user@outlook.com");
     //setEmail("/broken-image.jpg");
     const handleRegister = async () => {
         if (password.length < 8) {
             alert("La contraseña debe tener al menos 8 caracteres");
+            return;
+        }
+        if(password!==passwordConfirmation){
+            alert("La confirmacion de la contraseña debe ser igual a la contraseña");
             return;
         }
     
@@ -96,6 +101,20 @@ const Register = () => {
                                     value={password}
                                     onChange={(e) =>
                                         setPassword(e.target.value)
+                                    }
+                                />
+                            </Grid>
+                            <Grid item xs={12}>
+                                <TextField
+                                    required
+                                    fullWidth
+                                    name="passwordConfirmation"
+                                    label="passwordConfirmation"
+                                    type="password"
+                                    id="passwordConfirmation"
+                                    value={passwordConfirmation}
+                                    onChange={(e) =>
+                                        setPasswordConfirmation(e.target.value)
                                     }
                                 />
                             </Grid>

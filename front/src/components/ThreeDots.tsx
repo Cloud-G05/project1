@@ -30,8 +30,9 @@ export default function ThreeDots({
         setAnchorEl(event.currentTarget);
     };
 
-    const handleClickDeleteTask = () => {
-        deleteTask({ task_id, reloadTasks });
+    const handleClickDeleteTask = async () => {
+        await deleteTask({ task_id, reloadTasks });
+        alert("Tarea eliminada con éxito")
     };
 
     const handleDownloadInput = () => {

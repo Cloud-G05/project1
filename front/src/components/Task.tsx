@@ -31,9 +31,13 @@ const Task = ({
     input_file_path,
     output_file_path
 }: TaskProps) => {
+    const cardStyle = {
+        display: 'flex',
+        backgroundColor: task_details.available ? 'inherit' : '#424242', // Gris oscuro si no está disponible
+    };
     return (
         <div className="task">
-            <Card sx={{ display: "flex" }}>
+            <Card sx={{ ...cardStyle }}>
                 <Box sx={{ display: "flex", flexDirection: "column" }}>
                     <CardContent sx={{ flex: "1 0 auto" }}>
                         <Typography
@@ -54,14 +58,16 @@ const Task = ({
                         />
                     </CardContent>
                 </Box>
-                <ThreeDots
-                    setOpenPopUpEditTask={setOpenPopUpEditTask}
-                    setIsTaskUpdate={setIsTaskUpdate}
-                    task_id={task_id}
-                    reloadTasks={reloadTasks}
-                    input_file_path={input_file_path}
-                    output_file_path={output_file_path}
-                />
+                {task_details.available && // Solo renderiza ThreeDots si está disponible
+                    <ThreeDots
+                        setOpenPopUpEditTask={setOpenPopUpEditTask}
+                        setIsTaskUpdate={setIsTaskUpdate}
+                        task_id={task_id}
+                        reloadTasks={reloadTasks}
+                        input_file_path={input_file_path}
+                        output_file_path={output_file_path}
+                    />
+                }
             </Card>
         </div>
     );

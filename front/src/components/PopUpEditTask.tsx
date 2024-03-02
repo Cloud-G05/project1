@@ -129,6 +129,11 @@ const createTask = async ({ newTask, reloadTasks }: createTaskProps) => {
   if (response.status === 201) {
     const data = await response.json();
     reloadTasks();
+    // Temporizador de 3 segundos
+    setTimeout(() => {
+        console.log("Reloaded tasks after 3 seconds");
+        reloadTasks();
+      }, 3000);
   } else if (response.status === 404) {
     alert("To create a task, you need to include all the required fields");
   } else if (response.status === 400) {
