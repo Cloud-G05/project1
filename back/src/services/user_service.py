@@ -37,18 +37,18 @@ def create_user(db: Session, user: UserCreate) -> UserCreate:
     db.refresh(new_user)
     return new_user
 
-def login_user(db: Session, user: UserLogin)->UserRead:
+def login_user(db: Session, user_login: UserLogin)->UserRead:
     
-    if user.username:
-        user = get_user_by_username(db, user.username)
-    elif user.email:
-        user = get_user_by_email(db, user.email)
+    if user_login.username:
+        user = get_user_by_username(db, user_login.username)
+    elif user_login.email:
+        user = get_user_by_email(db, user_login.email)
     else:
         raise HTTPException(status_code=404, detail="Username or email must be provided")
     
     if user is None:
         raise HTTPException(status_code=404, detail="User not found")
-    if user.password != user.password:
+    if user.password != user_login.password:
         raise HTTPException(status_code=401, detail="Invalid password")
     
     return user
