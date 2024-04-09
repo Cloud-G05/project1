@@ -17,7 +17,7 @@ router = APIRouter(
 )
 
 
-UPLOAD_DIR = "../back/uploadsCopy"  # Carpeta donde guardar los archivos
+UPLOAD_DIR = "../../nfs/general/uploadsCopy"  # Carpeta donde guardar los archivos
 @router.post("/uploadfile", status_code=201)
 async def upload_file(file: UploadFile = File(...)):
     try:

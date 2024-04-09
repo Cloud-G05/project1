@@ -10,8 +10,11 @@ sys.path.append('../')
 from back.src.schemas.task import TaskCreate, TaskRead
 from back.src.services.user_service import get_user_by_email
 from back.src.models.task import Task as TaskModel
+from dotenv import load_dotenv
 
-celery_app = Celery('tasks', broker='redis://redis:6379/0', backend='redis://redis:6379/0')
+load_dotenv()
+
+celery_app = Celery('tasks', broker=os.getenv("REDIS_URL"))
 
 def get_task_by_id(db: Session, task_id: str) -> TaskRead:
     task = db.query(TaskModel).filter(TaskModel.id == task_id).first()
@@ -47,17 +50,17 @@ def create_task(db: Session, task: TaskCreate) -> TaskRead:
     if not user:
         raise HTTPException(status_code= 404, detail="User email does not exist")
     
-    output_file_path="/back/results/" + input_file_name.split(".")[0] + "." + task.converted_file_ext
-    save_file(task.input_file_path, "/back/uploads")
+    output_file_path="/nfs/general/results/" + input_file_name.split(".")[0] + "." + task.converted_file_ext
+    save_file(task.input_file_path, "/nfs/general/uploads")
     #task_result = convert_to_pdf.apply_async(args=["../back/uploads/"+input_file_name, output_file_path])
-    task_result = celery_app.send_task('tasks.convert_to_pdf', args=["/back/uploads/"+input_file_name, output_file_path])
+    task_result = celery_app.send_task('tasks.convert_to_pdf', args=["/nfs/general/uploads/"+input_file_name, output_file_path])
     new_task = TaskModel(
         id=str(task_result.id),
         name = task.name,
         original_file_ext = input_file_extension,
         converted_file_ext = task.converted_file_ext,
         time_stamp = datetime.now(),
-        input_file_path="/back/uploads/"+input_file_name,
+        input_file_path="/nfs/general/uploads/"+input_file_name,
         output_file_path=output_file_path,
         user_email = task.user_email
     )
@@ -90,7 +93,7 @@ def delete_task(db: Session, task_id: str) -> TaskRead:
     os.remove(task.output_file_path)
     os.remove(task.input_file_path)
     input_filename = task.input_file_path.split("/")[-1]
-    os.remove("/back/uploadsCopy/" + input_filename)
+    os.remove("/nfs/general/uploadsCopy/" + input_filename)
     task.available = False
     # db.delete(task)
     db.commit()
@@ -101,13 +104,13 @@ def download_file(filename: str, db: Session, Authorize) -> TaskRead:
     user = get_user_by_email(db, Authorize.get_jwt_subject())
     
     if ".pdf" in filename:
-        filename_path = "/back/results/" + filename
+        filename_path = "/nfs/general/results/" + filename
         task = db.query(TaskModel).filter(TaskModel.output_file_path == filename_path).first()
-        path_relative_to_back = "results/" + filename
+        path_relative_to_back = "../nfs/general/results/" + filename
     else:
-        filename_path = "/back/uploads/" + filename
+        filename_path = "/nfs/general/uploads/" + filename
         task = db.query(TaskModel).filter(TaskModel.input_file_path == filename_path).first()
-        path_relative_to_back = "uploads/" + filename
+        path_relative_to_back = "../nfs/general/uploads/" + filename
     
     if not task:
         raise HTTPException(status_code=404, detail="Task not found")
