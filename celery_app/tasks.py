@@ -3,15 +3,17 @@ import subprocess
 from celery.signals import task_success
 import sys
 import psycopg2
+from dotenv import load_dotenv
+import os
 sys.path.append('../')
 #from back.src.models.task import TaskStatus
+load_dotenv()
+celery_app = Celery('tasks', broker=os.getenv("REDIS_URL"))
 
-celery_app = Celery('tasks', broker='redis://redis:6379/0', backend='redis://redis:6379/0')
-
-DB_NAME = "file_converter"
-DB_USER = "postgres"
-DB_PASSWORD = "123456"
-DB_HOST = "postgres"
+DB_NAME = os.getenv("DB_NAME")
+DB_USER = os.getenv("DB_USER")
+DB_PASSWORD = os.getenv("DB_PASSWORD")
+DB_HOST = os.getenv("DB_HOST")
 
 def update_task_status(task_id, status):#
     try:
