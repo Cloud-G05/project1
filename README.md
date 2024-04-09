@@ -46,6 +46,8 @@ To be able to visualize the update of the task status from UPLOADED to PROCESSED
 
 # project2
 
+Project 2 explanation video: https://youtu.be/58Ea-bwE1oM
+
 The repository contains both the project's backend and frontend, in the back and front directories, respectively. On the other hand, there's a celery_app directory, which contains the code for the Celery application that is used to send convert files.
 
 Each directory has its own Dockerfile. These are used to build independents Docker images.
