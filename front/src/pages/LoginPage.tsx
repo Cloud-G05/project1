@@ -23,52 +23,58 @@ const LoginPage = () => {
     // });
 
     const handleLogin = async () => {
+        if (username.includes("@")) {
+            const response = await fetch(
+                "http://34.48.93.67:8000/users/login",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        email: username,
+                        password: password,
+                    }),
+                }
+            );
 
-        if( username.includes("@")){
-
-            const response = await fetch("http://localhost:8000/users/login", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ email: username, password: password }),
-        });
-
-        if (response.status === 201) {
-            window.location.href = "/home";
-            // i want to save the response of the fetch in a variable
-            const data = await response.json();
-            //setToken(data.access_token);
-            localStorage.setItem("token", data.access_token);
-            localStorage.setItem("username", data.username);
-            localStorage.setItem("user_email", data.email);
+            if (response.status === 201) {
+                window.location.href = "/home";
+                // i want to save the response of the fetch in a variable
+                const data = await response.json();
+                //setToken(data.access_token);
+                localStorage.setItem("token", data.access_token);
+                localStorage.setItem("username", data.username);
+                localStorage.setItem("user_email", data.email);
+            } else {
+                alert("Email o contraseña incorrectos");
+            }
         } else {
-            alert("Email o contraseña incorrectos");
-        }
+            const response = await fetch(
+                "http://34.48.93.67:8000/users/login",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        username: username,
+                        password: password,
+                    }),
+                }
+            );
 
-        }
-        else {
-
-            const response = await fetch("http://localhost:8000/users/login", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ username: username, password: password }),
-        });
-
-        if (response.status === 201) {
-            window.location.href = "/home";
-            // i want to save the response of the fetch in a variable
-            const data = await response.json();
-            //setToken(data.access_token);
-            localStorage.setItem("token", data.access_token);
-            localStorage.setItem("username", username);
-            localStorage.setItem("user_email", data.email);
-        } else {
-            alert("Usuario o contraseña incorrectos");
-        }
-
+            if (response.status === 201) {
+                window.location.href = "/home";
+                // i want to save the response of the fetch in a variable
+                const data = await response.json();
+                //setToken(data.access_token);
+                localStorage.setItem("token", data.access_token);
+                localStorage.setItem("username", username);
+                localStorage.setItem("user_email", data.email);
+            } else {
+                alert("Usuario o contraseña incorrectos");
+            }
         }
     };
 

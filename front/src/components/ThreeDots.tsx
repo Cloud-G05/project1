@@ -21,7 +21,7 @@ export default function ThreeDots({
     task_id,
     reloadTasks,
     input_file_path,
-    output_file_path
+    output_file_path,
 }: ThreeDotsProps) {
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
@@ -32,7 +32,7 @@ export default function ThreeDots({
 
     const handleClickDeleteTask = async () => {
         await deleteTask({ task_id, reloadTasks });
-        alert("Tarea eliminada con éxito")
+        alert("Tarea eliminada con éxito");
     };
 
     const handleDownloadInput = () => {
@@ -93,7 +93,7 @@ interface deleteTaskProps {
 }
 
 const deleteTask = async ({ task_id, reloadTasks }: deleteTaskProps) => {
-    const response = await fetch(`http://localhost:8000/tasks/${task_id}`, {
+    const response = await fetch(`http://34.48.93.67:8000/tasks/${task_id}`, {
         method: "DELETE",
         headers: {
             accept: "*/*",
@@ -108,59 +108,59 @@ const deleteTask = async ({ task_id, reloadTasks }: deleteTaskProps) => {
 };
 
 const downloadInputFile = async (input_file_path: string) => {
-    const fileName = input_file_path.split('/').pop();
+    const fileName = input_file_path.split("/").pop();
     const token = localStorage.getItem("token");
-    const response = await fetch(`http://localhost:8000/files/${fileName}`, {
-        method: 'GET',
+    const response = await fetch(`http://34.48.93.67:8000/files/${fileName}`, {
+        method: "GET",
         headers: {
-            'Authorization': 'Bearer ' + token, // Si necesitas enviar un token de autenticación
+            Authorization: "Bearer " + token, // Si necesitas enviar un token de autenticación
         },
     });
 
     if (response.ok) {
         const blob = await response.blob();
         const url = window.URL.createObjectURL(new Blob([blob]));
-        const link = document.createElement('a');
+        const link = document.createElement("a");
         link.href = url;
-        if(fileName!=null){
-            link.setAttribute('download', fileName);
+        if (fileName != null) {
+            link.setAttribute("download", fileName);
             document.body.appendChild(link);
             link.click();
             // Verificar si el nodo padre existe antes de intentar eliminar el enlace
             if (link.parentNode) {
-            link.parentNode.removeChild(link);
+                link.parentNode.removeChild(link);
+            }
         }
-        }     
     } else {
-        console.error('Error al descargar el archivo');
+        console.error("Error al descargar el archivo");
     }
 };
 
 const downloadOutputFile = async (output_file_path: string) => {
-    const fileName = output_file_path.split('/').pop();
+    const fileName = output_file_path.split("/").pop();
     const token = localStorage.getItem("token");
-    const response = await fetch(`http://localhost:8000/files/${fileName}`, {
-        method: 'GET',
+    const response = await fetch(`http://34.48.93.67:8000/files/${fileName}`, {
+        method: "GET",
         headers: {
-            'Authorization': 'Bearer ' + token, // Si necesitas enviar un token de autenticación
+            Authorization: "Bearer " + token, // Si necesitas enviar un token de autenticación
         },
     });
 
     if (response.ok) {
         const blob = await response.blob();
         const url = window.URL.createObjectURL(new Blob([blob]));
-        const link = document.createElement('a');
+        const link = document.createElement("a");
         link.href = url;
-        if(fileName!=null){
-            link.setAttribute('download', fileName);
+        if (fileName != null) {
+            link.setAttribute("download", fileName);
             document.body.appendChild(link);
             link.click();
             // Verificar si el nodo padre existe antes de intentar eliminar el enlace
             if (link.parentNode) {
-            link.parentNode.removeChild(link);
+                link.parentNode.removeChild(link);
+            }
         }
-        }     
     } else {
-        console.error('Error al descargar el archivo');
+        console.error("Error al descargar el archivo");
     }
 };

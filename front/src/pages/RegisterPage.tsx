@@ -27,12 +27,14 @@ const Register = () => {
             alert("La contraseña debe tener al menos 8 caracteres");
             return;
         }
-        if(password!==passwordConfirmation){
-            alert("La confirmacion de la contraseña debe ser igual a la contraseña");
+        if (password !== passwordConfirmation) {
+            alert(
+                "La confirmacion de la contraseña debe ser igual a la contraseña"
+            );
             return;
         }
-    
-        const response = await fetch("http://localhost:8000/users/", {
+
+        const response = await fetch("http://34.48.93.67:8000/users/", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -44,7 +46,6 @@ const Register = () => {
             }),
         });
 
-    
         if (response.status === 201) {
             window.location.href = "/";
         } else {
@@ -54,10 +55,9 @@ const Register = () => {
                 alert(responseBody.detail);
             } else {
                 alert("Algo salió mal");
-            }    
+            }
         }
     };
-    
 
     return (
         <>
@@ -127,9 +127,7 @@ const Register = () => {
                                     name="email"
                                     value={email}
                                     type="email"
-                                    onChange={(e) =>
-                                        setEmail(e.target.value)
-                                    }
+                                    onChange={(e) => setEmail(e.target.value)}
                                 />
                             </Grid>
                         </Grid>

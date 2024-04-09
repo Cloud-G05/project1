@@ -19,7 +19,6 @@ export interface TaskDetails {
     user_email: string;
 }
 
-
 const TasksPage = () => {
     const [openPopUpEditTask, setOpenPopUpEditTask] = useState(false);
     const [isTaskUpdate, setIsTaskUpdate] = useState(true);
@@ -31,7 +30,6 @@ const TasksPage = () => {
     const reloadTasks = () => {
         setAreTasksReloaded(!areTasksReloaded);
     };
-
 
     useEffect(() => {
         getTasksByEmail(setTasks);
@@ -78,7 +76,7 @@ const getTasksByEmail = async (
     const userEmail = localStorage.getItem("user_email");
     console.log(userEmail);
     const response = await fetch(
-        `http://localhost:8000/tasks?email=${encodeURIComponent(userEmail!)}`, // Envía el correo electrónico como parámetro de consulta
+        `http://34.48.93.67:8000/tasks?email=${encodeURIComponent(userEmail!)}`, // Envía el correo electrónico como parámetro de consulta
         {
             method: "GET",
             headers: {
@@ -92,7 +90,6 @@ const getTasksByEmail = async (
         const data = await response.json();
         setTasks(data);
     } else {
-        alert('Error obtaining tasks');
+        alert("Error obtaining tasks");
     }
 };
-
