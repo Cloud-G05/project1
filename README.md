@@ -64,7 +64,7 @@ sudo docker run -v /nfs/general/.env:/.env -v /nfs/general/uploads:/nfs/general/
 
 This commands is assuming that the .env file is in the shared folder of the NFS server (VM3). The uploads, uploadsCopy and results folders are also in the shared folder of the NFS server (VM3).
 
-To run the celery connect to SSH in VM2 (worker) and run the following command:
+To run celery connect to SSH in VM2 (worker) and run the following command:
 
 ```bash
 sudo docker run -v /nfs/general/.env:/.env -v /nfs/general/uploads:/nfs/general/uploads -v /nfs/general/uploadsCopy:/nfs/general/uploadsCopy -v /nfs/general/results:/nfs/general/results celery_app
