@@ -1,11 +1,23 @@
 from datetime import datetime
 import shutil
 from fastapi import HTTPException
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, StreamingResponse
 from sqlalchemy.orm import Session
 import os
 import sys
 from celery import Celery
+from uuid import uuid4
+from fastapi import File, UploadFile
+import mimetypes
+from google.cloud import pubsub_v1
+from google.cloud import storage
+
+storage_client = storage.Client.from_service_account_json("my-cloud-project-418900-d1bdb94a8d86.json")
+bucket_name = "cloud_entrega_3"
+
+# Crea una instancia del cliente de Pub/Sub con las credenciales
+publisher = pubsub_v1.PublisherClient.from_service_account_json("my-cloud-project-418900-d1bdb94a8d86.json")
+
 sys.path.append('../')
 from back.src.schemas.task import TaskCreate, TaskRead
 from back.src.services.user_service import get_user_by_email
@@ -14,7 +26,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-celery_app = Celery('tasks', broker=os.getenv("REDIS_URL"))
+#celery_app = Celery('tasks', broker=os.getenv("REDIS_URL"))
 
 def get_task_by_id(db: Session, task_id: str) -> TaskRead:
     task = db.query(TaskModel).filter(TaskModel.id == task_id).first()
@@ -50,17 +62,20 @@ def create_task(db: Session, task: TaskCreate) -> TaskRead:
     if not user:
         raise HTTPException(status_code= 404, detail="User email does not exist")
     
-    output_file_path="/nfs/general/results/" + input_file_name.split(".")[0] + "." + task.converted_file_ext
-    save_file(task.input_file_path, "/nfs/general/uploads")
+    output_file_path="/results/" + input_file_name.split(".")[0] + "." + task.converted_file_ext
+    
+    #save_file(task.input_file_path, "/uploads")
     #task_result = convert_to_pdf.apply_async(args=["../back/uploads/"+input_file_name, output_file_path])
-    task_result = celery_app.send_task('tasks.convert_to_pdf', args=["/nfs/general/uploads/"+input_file_name, output_file_path])
+    #task_result = celery_app.send_task('tasks.convert_to_pdf', args=["/uploads/"+input_file_name, output_file_path])
+    task_id = str(uuid4())
+    send_message('projects/my-cloud-project-418900/subscriptions/file_conversion-sub', f'convert_to_pdf {"/uploads/"+input_file_name} {output_file_path} {task_id}')
     new_task = TaskModel(
-        id=str(task_result.id),
+        id=task_id,
         name = task.name,
         original_file_ext = input_file_extension,
         converted_file_ext = task.converted_file_ext,
         time_stamp = datetime.now(),
-        input_file_path="/nfs/general/uploads/"+input_file_name,
+        input_file_path="/uploads/"+input_file_name,
         output_file_path=output_file_path,
         user_email = task.user_email
     )
@@ -71,29 +86,54 @@ def create_task(db: Session, task: TaskCreate) -> TaskRead:
 
     return new_task
 
-def save_file(source_path: str, destination_directory: str):
+def save_file(source_path: str, file: UploadFile = File(...)):
 
-    os.makedirs(destination_directory, exist_ok=True)
+    # os.makedirs(destination_directory, exist_ok=True)
         
-    # Get the file name from the source path
-    file_name = os.path.basename(source_path)
-    # Copy the file to the destination directory
-    destination_path = os.path.join(destination_directory, file_name)
-    shutil.copy(source_path, destination_path)
+    # # Get the file name from the source path
+    # file_name = os.path.basename(source_path)
+    # # Copy the file to the destination directory
+    # destination_path = os.path.join(destination_directory, file_name)
+    # shutil.copy(source_path, destination_path)
+
+    bucket = storage_client.get_bucket(bucket_name)
+    blob = bucket.blob(source_path)
+    blob.upload_from_file(file)
+
+def send_message(pubsub_topic, message):
+    # Publica el mensaje en el tema
+    future = publisher.publish(pubsub_topic, message.encode('utf-8'))
+    # Espera a que se complete la publicación (opcional)
+    #future.result()
     
 
 def delete_task(db: Session, task_id: str) -> TaskRead:
     task = get_task_by_id(db, task_id)
     if not task.available:
         raise HTTPException(status_code=404, detail="Task not found")
-    output_path_relative_to_back = task.output_file_path.split("../")[-1]
-    input_path_relative_to_back = task.input_file_path.split("../")[-1]
-    if not os.path.exists(output_path_relative_to_back) or not os.path.exists(input_path_relative_to_back):
+    # output_path_relative_to_back = task.output_file_path.split("../")[-1]
+    # input_path_relative_to_back = task.input_file_path.split("../")[-1]
+    # if not os.path.exists(output_path_relative_to_back) or not os.path.exists(input_path_relative_to_back):
+    #     raise HTTPException(status_code=404, detail="File not found")
+    # os.remove(task.output_file_path)
+    # os.remove(task.input_file_path)
+    #input_filename = task.input_file_path.split("/")[-1]
+
+    # Get a reference to the bucket
+    bucket = storage_client.get_bucket(bucket_name)
+    # Get a reference to the file
+    blob_org = bucket.blob(task.input_file_path)
+    blob_conv = bucket.blob(task.output_file_path)
+
+    # Check if the file exists
+    if not blob_org.exists() or not blob_conv.exists():
         raise HTTPException(status_code=404, detail="File not found")
-    os.remove(task.output_file_path)
-    os.remove(task.input_file_path)
-    input_filename = task.input_file_path.split("/")[-1]
-    os.remove("/nfs/general/uploadsCopy/" + input_filename)
+    
+    # Delete the file
+    blob_org.delete()
+    blob_conv.delete()
+
+    #os.remove("/nfs/general/uploadsCopy/" + input_filename)
     task.available = False
     # db.delete(task)
     db.commit()
@@ -104,13 +144,13 @@ def download_file(filename: str, db: Session, Authorize) -> TaskRead:
     user = get_user_by_email(db, Authorize.get_jwt_subject())
     
     if ".pdf" in filename:
-        filename_path = "/nfs/general/results/" + filename
+        filename_path = "/results/" + filename
         task = db.query(TaskModel).filter(TaskModel.output_file_path == filename_path).first()
-        path_relative_to_back = "../nfs/general/results/" + filename
+        #path_relative_to_back = "../nfs/general/results/" + filename
     else:
-        filename_path = "/nfs/general/uploads/" + filename
+        filename_path = "/uploads/" + filename
         task = db.query(TaskModel).filter(TaskModel.input_file_path == filename_path).first()
-        path_relative_to_back = "../nfs/general/uploads/" + filename
+        #path_relative_to_back = "../nfs/general/uploads/" + filename
     
     if not task:
         raise HTTPException(status_code=404, detail="Task not found")
@@ -118,7 +158,23 @@ def download_file(filename: str, db: Session, Authorize) -> TaskRead:
         raise HTTPException(status_code=404, detail="User not authorized to download this file")
     if not task.available:
         raise HTTPException(status_code=404, detail="Task not found")
-    if not os.path.exists(path_relative_to_back):
-        raise HTTPException(status_code=404, detail="File not found")
+    # if not os.path.exists(path_relative_to_back):
+    #     raise HTTPException(status_code=404, detail="File not found")
     
-    return FileResponse(filename_path, filename = filename)
+    # Conexión a Google Cloud Storage
+    storage_client = storage.Client()
+    bucket = storage_client.get_bucket(bucket_name)
+
+    # Obtener la referencia del archivo en el bucket
+    blob = bucket.blob(filename_path)
+
+    if not blob.exists():
+        raise HTTPException(status_code=404, detail="File not found")
+
+    # Descargar el archivo# Get the MIME type based on the file extension
+    mime_type, _ = mimetypes.guess_type(filename)
+    # Default to "application/octet-stream" if MIME type cannot be determined
+    media_type = mime_type if mime_type else "application/octet-stream"
+    return StreamingResponse(blob.download_as_bytes(), media_type=media_type)
+
+    #return FileResponse(filename_path, filename = filename)

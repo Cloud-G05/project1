@@ -17,25 +17,26 @@ router = APIRouter(
 )
 
 
-UPLOAD_DIR = "../../nfs/general/uploadsCopy"  # Carpeta donde guardar los archivos
+UPLOAD_DIR = "../../uploadsCopy"  # Carpeta donde guardar los archivos
 @router.post("/uploadfile", status_code=201)
 async def upload_file(file: UploadFile = File(...)):
     try:
-        # Leer el contenido del archivo
-        contents = await file.read()
+        # # Leer el contenido del archivo
+        # contents = await file.read()
 
-        # Verificar si la carpeta UPLOAD_DIR existe, si no, crearla
-        if not os.path.exists(UPLOAD_DIR):
-            os.makedirs(UPLOAD_DIR)
+        # # Verificar si la carpeta UPLOAD_DIR existe, si no, crearla
+        # if not os.path.exists(UPLOAD_DIR):
+        #     os.makedirs(UPLOAD_DIR)
 
-        # Crear la ruta completa del archivo en la carpeta uploadsCopy
-        file_path = os.path.join(UPLOAD_DIR, file.filename)
+        # # Crear la ruta completa del archivo en la carpeta uploadsCopy
+        # file_path = os.path.join(UPLOAD_DIR, file.filename)
 
-        # Guardar el archivo en la carpeta uploadsCopy
-        with open(file_path, "wb") as f:
-            f.write(contents)
-
+        # # Guardar el archivo en la carpeta uploadsCopy
+        # with open(file_path, "wb") as f:
+        #     f.write(contents)
+        service.save_file('/uploads/'+file.filename, file)
         return {"filename": file.filename}
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
