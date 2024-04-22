@@ -13,3 +13,5 @@ psycopg2==2.9.9
 psycopg2-binary==2.9.9
 unoconv
 python-dotenv==0.19.1
+google-cloud-pubsub==2.16.0
+google-cloud-storage==2.9.0

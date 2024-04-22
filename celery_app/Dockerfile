@@ -24,4 +24,4 @@ COPY . /celery_app
 
 WORKDIR /celery_app
 
-CMD ["sh", "-c", "celery -A tasks worker -l info -Q celery"]
+CMD tasks.py
