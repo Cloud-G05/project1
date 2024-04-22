@@ -25,7 +25,7 @@ const LoginPage = () => {
     const handleLogin = async () => {
         if (username.includes("@")) {
             const response = await fetch(
-                "http://34.48.93.67:8000/users/login",
+                "http://34.110.178.166:80/users/login",
                 {
                     method: "POST",
                     headers: {
@@ -51,7 +51,7 @@ const LoginPage = () => {
             }
         } else {
             const response = await fetch(
-                "http://34.48.93.67:8000/users/login",
+                "http://34.110.178.166:80/users/login",
                 {
                     method: "POST",
                     headers: {

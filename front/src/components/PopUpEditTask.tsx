@@ -42,9 +42,7 @@ const PopUpEditTask = ({
     const defaultHour = dayjs().hour(12).minute(0);
     const [time, setTime] = React.useState<Dayjs | null>(defaultHour);
 
-    const [input_file_path, setInput_file_path] = React.useState(
-        "../nfs/general/uploadsCopy/"
-    );
+    const [input_file_path, setInput_file_path] = React.useState("/uploads/");
     const [name, setName] = React.useState("");
     const [converted_file_ext, setConverted_file_ext] = React.useState("pdf");
     const [file, setFile] = React.useState<File | null>(null); // Nuevo estado para el archivo
@@ -128,7 +126,7 @@ interface createTaskProps {
 }
 
 const createTask = async ({ newTask, reloadTasks }: createTaskProps) => {
-    const response = await fetch(`http://34.48.93.67:8000/tasks/`, {
+    const response = await fetch(`http://34.110.178.166:80/tasks/`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -168,7 +166,7 @@ interface createFileProps {
 const uploadFile = async ({ newFile, reloadTasks }: createFileProps) => {
     const formData = new FormData(); // Crear objeto FormData
     formData.append("file", newFile);
-    const response = await fetch("http://34.48.93.67:8000/files/uploadfile", {
+    const response = await fetch("http://34.110.178.166:80/files/uploadfile", {
         method: "POST",
         headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
