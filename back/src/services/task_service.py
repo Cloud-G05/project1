@@ -12,7 +12,7 @@ import mimetypes
 from google.cloud import pubsub_v1
 from google.cloud import storage
 
-storage_client = storage.Client.from_service_account_json("my-cloud-project-418900-d1bdb94a8d86.json")
+storage_client = storage.Client()
 bucket_name = "cloud_entrega_3"
 
 # Crea una instancia del cliente de Pub/Sub con las credenciales
@@ -98,7 +98,7 @@ def save_file(source_path: str, file: UploadFile = File(...)):
 
     bucket = storage_client.get_bucket(bucket_name)
     blob = bucket.blob(source_path)
-    blob.upload_from_file(file)
+    blob.upload_from_file('/'+source_path)
 
 def send_message(pubsub_topic, message):
     # Publica el mensaje en el tema
@@ -120,7 +120,7 @@ def delete_task(db: Session, task_id: str) -> TaskRead:
     #input_filename = task.input_file_path.split("/")[-1]
 
     # Get a reference to the bucket
-    bucket = storage_client.get_bucket(bucket_name)
+    bucket = storage_client.bucket(bucket_name)
     # Get a reference to the file
     blob_org = bucket.blob(task.input_file_path)
     blob_conv = bucket.blob(task.output_file_path)
@@ -163,7 +163,7 @@ def download_file(filename: str, db: Session, Authorize) -> TaskRead:
     
     # Conexión a Google Cloud Storage
     storage_client = storage.Client()
-    bucket = storage_client.get_bucket(bucket_name)
+    bucket = storage_client.bucket(bucket_name)
 
     # Obtener la referencia del archivo en el bucket
     blob = bucket.blob(filename_path)
