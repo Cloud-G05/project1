@@ -26,7 +26,7 @@ def callback(message):
     # Process the incoming message
     message_data = message.data.decode('utf-8')
 
-    print(f"Received message: {message_data.data}")
+    print(f"Received message: {message_data}")
     mensaje_split = message_data.split(' ')
     tarea = mensaje_split[0]
     input_file_path = mensaje_split[1]
