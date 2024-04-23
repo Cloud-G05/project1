@@ -179,5 +179,4 @@ def download_file(filename: str, db: Session, Authorize) -> TaskRead:
     #media_type = mime_type if mime_type else "application/octet-stream"
     #return StreamingResponse(blob.download_as_bytes(), media_type=media_type)
 
-    FileResponse(filename, filename = filename)
-    os.remove(filename)
+    return FileResponse(filename, filename = filename)
