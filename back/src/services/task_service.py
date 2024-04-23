@@ -96,7 +96,7 @@ def save_file(source_path: str, file: UploadFile = File(...)):
     # destination_path = os.path.join(destination_directory, file_name)
     # shutil.copy(source_path, destination_path)
 
-    bucket = storage_client.get_bucket(bucket_name)
+    bucket = storage_client.bucket(bucket_name)
     blob = bucket.blob(source_path)
     blob.upload_from_file('/'+source_path)
 
