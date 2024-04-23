@@ -99,6 +99,7 @@ def save_file(source_path: str, file: UploadFile = File(...)):
     bucket = storage_client.bucket(bucket_name)
     blob = bucket.blob(source_path)
     blob.upload_from_filename('/'+source_path, if_generation_match=0)
+    os.remove('/'+source_path)
 
 def send_message(pubsub_topic, message):
     # Publica el mensaje en el tema
@@ -144,11 +145,11 @@ def download_file(filename: str, db: Session, Authorize) -> TaskRead:
     user = get_user_by_email(db, Authorize.get_jwt_subject())
     
     if ".pdf" in filename:
-        filename_path = "/results/" + filename
+        filename_path = "results/" + filename
         task = db.query(TaskModel).filter(TaskModel.output_file_path == filename_path).first()
         #path_relative_to_back = "../nfs/general/results/" + filename
     else:
-        filename_path = "/uploads/" + filename
+        filename_path = "uploads/" + filename
         task = db.query(TaskModel).filter(TaskModel.input_file_path == filename_path).first()
         #path_relative_to_back = "../nfs/general/uploads/" + filename
     
