@@ -9,7 +9,7 @@ import os
 sys.path.append('../')
 #from back.src.models.task import TaskStatus
 load_dotenv()
-celery_app = Celery('tasks', broker=os.getenv("REDIS_URL"))
+#celery_app = Celery('tasks', broker=os.getenv("REDIS_URL"))
 
 DB_NAME = os.getenv("DB_NAME")
 DB_USER = os.getenv("DB_USER")
@@ -19,8 +19,8 @@ DB_HOST = os.getenv("DB_HOST")
 storage_client = storage.Client()
 bucket_name = "cloud_entrega_3"
 
-subscriber = pubsub_v1.SubscriberClient()
-subscription_path = subscriber.subscription_path('my-cloud-project-418900', 'projects/my-cloud-project-418900/subscriptions/file_conversion-sub')
+# subscriber = pubsub_v1.SubscriberClient()
+# subscription_path = subscriber.subscription_path('my-cloud-project-418900', 'projects/my-cloud-project-418900/subscriptions/file_conversion-sub')
 
 def callback(message):
     # Process the incoming message
@@ -91,9 +91,16 @@ def convert_to_pdf(input_file, output_file, task_id):
 #         print('No sender object found.')
 
 
-# Subscribe to the topic and attach the callback function
-subscriber.subscribe(subscription_path, callback=callback)
-# Start the subscriber
-print("Listening for messages...")
-while True:
-    pass
+# # Subscribe to the topic and attach the callback function
+# subscriber.subscribe(subscription_path, callback=callback)
+# # Start the subscriber
+# print("Listening for messages...")
+# while True:
+#     pass
+
+with pubsub_v1.SubscriberClient() as subscriber:
+    future = subscriber.subscribe('projects/my-cloud-project-418900/subscriptions/file_conversion-sub', callback)
+    try:
+        future.result()
+    except KeyboardInterrupt:
+        future.cancel()
