@@ -24,4 +24,4 @@ COPY . /celery_app
 
 WORKDIR /celery_app
 
-CMD tasks.py
+CMD ["python3","tasks.py"]
