@@ -168,14 +168,16 @@ def download_file(filename: str, db: Session, Authorize) -> TaskRead:
 
     # Obtener la referencia del archivo en el bucket
     blob = bucket.blob(filename_path)
-
+    
     if not blob.exists():
         raise HTTPException(status_code=404, detail="File not found")
 
+    blob.download_to_filename(filename)
     # Descargar el archivo# Get the MIME type based on the file extension
-    mime_type, _ = mimetypes.guess_type(filename)
+    #mime_type, _ = mimetypes.guess_type(filename)
     # Default to "application/octet-stream" if MIME type cannot be determined
-    media_type = mime_type if mime_type else "application/octet-stream"
-    return StreamingResponse(blob.download_as_bytes(), media_type=media_type)
+    #media_type = mime_type if mime_type else "application/octet-stream"
+    #return StreamingResponse(blob.download_as_bytes(), media_type=media_type)
 
-    #return FileResponse(filename_path, filename = filename)
+    FileResponse(filename, filename = filename)
+    os.remove(filename)
