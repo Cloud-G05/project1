@@ -62,20 +62,20 @@ def create_task(db: Session, task: TaskCreate) -> TaskRead:
     if not user:
         raise HTTPException(status_code= 404, detail="User email does not exist")
     
-    output_file_path="/results/" + input_file_name.split(".")[0] + "." + task.converted_file_ext
+    output_file_path="results/" + input_file_name.split(".")[0] + "." + task.converted_file_ext
     
     #save_file(task.input_file_path, "/uploads")
     #task_result = convert_to_pdf.apply_async(args=["../back/uploads/"+input_file_name, output_file_path])
     #task_result = celery_app.send_task('tasks.convert_to_pdf', args=["/uploads/"+input_file_name, output_file_path])
     task_id = str(uuid4())
-    send_message('projects/my-cloud-project-418900/subscriptions/file_conversion-sub', f'convert_to_pdf {"/uploads/"+input_file_name} {output_file_path} {task_id}')
+    send_message('projects/my-cloud-project-418900/topics/file_conversion', f'convert_to_pdf {"uploads/"+input_file_name} {output_file_path} {task_id}')
     new_task = TaskModel(
         id=task_id,
         name = task.name,
         original_file_ext = input_file_extension,
         converted_file_ext = task.converted_file_ext,
         time_stamp = datetime.now(),
-        input_file_path="/uploads/"+input_file_name,
+        input_file_path="uploads/"+input_file_name,
         output_file_path=output_file_path,
         user_email = task.user_email
     )
