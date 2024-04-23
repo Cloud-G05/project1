@@ -65,7 +65,7 @@ def convert_to_pdf(input_file, output_file, task_id):
         input_blob = bucket.blob(input_file)
 
         # Execute the unoconv command to convert the PPTX file to PDF
-        converted_file = subprocess.run(['unoconv', '-f', 'pdf', '-'], input=input_blob.download_as_bytes(), check=True)
+        converted_file = subprocess.run(['unoconv', '-f', 'pdf', '-'], input=input_blob.download_as_bytes(), capture_output=True, check=True)
         
         print(f"Conversion completed: {input_file} -> {output_file}")
 
