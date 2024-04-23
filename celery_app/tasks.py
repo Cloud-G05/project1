@@ -63,18 +63,23 @@ def convert_to_pdf(input_file, output_file, task_id):
     try:
         bucket = storage_client.bucket(bucket_name)
         input_blob = bucket.blob(input_file)
-
+        input_blob.download_to_filename('/'+input_file)
         # Execute the unoconv command to convert the PPTX file to PDF
-        converted_file = subprocess.run(['unoconv', '-f', 'pdf', '-'], input=input_blob.download_as_bytes(), capture_output=True, check=True)
+        subprocess.run(['unoconv', '-f', 'pdf', '-o', "/"+output_file, "/"+input_file], check=True)
+        #converted_file = subprocess.run(['unoconv', '-f', 'pdf', '-'], input=input_blob.download_as_bytes(), capture_output=True, check=True)
         
         print(f"Conversion completed: {input_file} -> {output_file}")
 
         output_blob = bucket.blob(output_file)
-        output_blob.upload_from_string(converted_file.stdout)
+        #output_blob.upload_from_string(converted_file.stdout)
+        output_blob.upload_from_filename('/'+output_file, if_generation_match=0)
 
         print(f'Task {task_id} completed successfully.')
         # Update the task status to PROCESSED
         update_task_status(task_id, "PROCESSED")
+
+        os.remove('/'+output_file)
+        os.remove('/'+input_file)
         return output_file
     except subprocess.CalledProcessError as e:
         print(f"Conversion failed: {e}")
