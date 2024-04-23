@@ -76,9 +76,7 @@ const getTasksByEmail = async (
     const userEmail = localStorage.getItem("user_email");
     console.log(userEmail);
     const response = await fetch(
-        `http://34.110.178.166:80/tasks?email=${encodeURIComponent(
-            userEmail!
-        )}`, // Envía el correo electrónico como parámetro de consulta
+        `http://34.110.178.166/tasks?email=${encodeURIComponent(userEmail!)}`, // Envía el correo electrónico como parámetro de consulta
         {
             method: "GET",
             headers: {

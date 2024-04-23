@@ -34,7 +34,7 @@ const Register = () => {
             return;
         }
 
-        const response = await fetch("http://34.110.178.166:80/users/", {
+        const response = await fetch("http://34.110.178.166/users/", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

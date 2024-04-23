@@ -126,7 +126,7 @@ interface createTaskProps {
 }
 
 const createTask = async ({ newTask, reloadTasks }: createTaskProps) => {
-    const response = await fetch(`http://34.110.178.166:80/tasks/`, {
+    const response = await fetch(`http://34.110.178.166/tasks/`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -166,7 +166,7 @@ interface createFileProps {
 const uploadFile = async ({ newFile, reloadTasks }: createFileProps) => {
     const formData = new FormData(); // Crear objeto FormData
     formData.append("file", newFile);
-    const response = await fetch("http://34.110.178.166:80/files/uploadfile", {
+    const response = await fetch("http://34.110.178.166/files/uploadfile", {
         method: "POST",
         headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
