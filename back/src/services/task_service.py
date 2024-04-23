@@ -16,7 +16,7 @@ storage_client = storage.Client()
 bucket_name = "cloud_entrega_3"
 
 # Crea una instancia del cliente de Pub/Sub con las credenciales
-publisher = pubsub_v1.PublisherClient.from_service_account_json("my-cloud-project-418900-d1bdb94a8d86.json")
+publisher = pubsub_v1.PublisherClient()
 
 sys.path.append('../')
 from back.src.schemas.task import TaskCreate, TaskRead
