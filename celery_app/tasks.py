@@ -16,7 +16,7 @@ DB_USER = os.getenv("DB_USER")
 DB_PASSWORD = os.getenv("DB_PASSWORD")
 DB_HOST = os.getenv("DB_HOST")
 
-storage_client = storage.Client.from_service_account_json("my-cloud-project-418900-d1bdb94a8d86.json")
+storage_client = storage.Client()
 bucket_name = "cloud_entrega_3"
 
 subscriber = pubsub_v1.SubscriberClient()
@@ -95,4 +95,5 @@ def convert_to_pdf(input_file, output_file, task_id):
 subscriber.subscribe(subscription_path, callback=callback)
 # Start the subscriber
 print("Listening for messages...")
-subscriber.open()
+while True:
+    pass
