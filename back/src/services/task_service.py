@@ -98,7 +98,7 @@ def save_file(source_path: str, file: UploadFile = File(...)):
 
     bucket = storage_client.bucket(bucket_name)
     blob = bucket.blob(source_path)
-    blob.upload_from_filename('/'+source_path, if_generation_match=0)
+    blob.upload_from_filename('/'+source_path)
     os.remove('/'+source_path)
 
 def send_message(pubsub_topic, message):

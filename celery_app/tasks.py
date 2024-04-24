@@ -72,7 +72,7 @@ def convert_to_pdf(input_file, output_file, task_id):
 
         output_blob = bucket.blob(output_file)
         #output_blob.upload_from_string(converted_file.stdout)
-        output_blob.upload_from_filename(output_file.split('/')[-1], if_generation_match=0)
+        output_blob.upload_from_filename(output_file.split('/')[-1])
 
         print(f'Task {task_id} completed successfully.')
         # Update the task status to PROCESSED
