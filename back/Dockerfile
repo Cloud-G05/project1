@@ -8,9 +8,7 @@ RUN apt-get install -y python3 python3-pip
 
 RUN apt-get update && apt-get upgrade -y
 
-# Install dependencies
-RUN apt-get install -y libreoffice unoconv && \
-    pip3 install unoconv
+
 
 
 COPY ./requirements.txt /back/requirements.txt
