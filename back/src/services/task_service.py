@@ -5,7 +5,6 @@ from fastapi.responses import FileResponse, StreamingResponse
 from sqlalchemy.orm import Session
 import os
 import sys
-from celery import Celery
 from uuid import uuid4
 from fastapi import File, UploadFile
 import mimetypes
@@ -26,7 +25,6 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-#celery_app = Celery('tasks', broker=os.getenv("REDIS_URL"))
 
 def get_task_by_id(db: Session, task_id: str) -> TaskRead:
     task = db.query(TaskModel).filter(TaskModel.id == task_id).first()
