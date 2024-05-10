@@ -11,6 +11,6 @@ COPY . /back
 
 WORKDIR /back
 
-CMD ["sh", "-c", "python -m uvicorn src.main:app --host 0.0.0.0 --bind 8080"]
+CMD ["sh", "-c", "python -m uvicorn src.main:app --host 0.0.0.0 --port 8080"]
 
 
