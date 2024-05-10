@@ -1,20 +1,13 @@
-FROM ubuntu
+FROM python:3.11-slim
 
-ENV DEBIAN_FRONTEND=noninteractive
+ENV PYTHONUNBUFFERED True
 
-RUN apt-get update && apt-get upgrade -y
-
-RUN apt-get install -y python3 python3-pip
-
-RUN apt-get update && apt-get upgrade -y
 
 
 
 
 COPY ./requirements.txt /back/requirements.txt
 
-# # Instalar psycopg2-binary
-RUN apt install libpq-dev python3-dev -y
 
 RUN pip install --no-cache-dir -r /back/requirements.txt
 
