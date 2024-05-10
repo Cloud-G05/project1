@@ -9,10 +9,8 @@ RUN pip install --no-cache-dir -r /back/requirements.txt
 
 COPY . /back
 
-EXPOSE 8000
-
 WORKDIR /back
 
-CMD ["sh", "-c", "python3 -m uvicorn src.main:app --host 0.0.0.0 --port 8000"]
+CMD ["sh", "-c", "python -m uvicorn src.main:app --host 0.0.0.0 --bind 8080"]
 
 
