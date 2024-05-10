@@ -16,7 +16,7 @@ COPY ./requirements.txt /back/requirements.txt
 # # Instalar psycopg2-binary
 RUN apt install libpq-dev python3-dev -y
 
-RUN pip3 install --no-cache-dir -r /back/requirements.txt
+RUN pip install --no-cache-dir -r /back/requirements.txt
 
 COPY . /back
 
