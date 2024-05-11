@@ -1,15 +1,11 @@
-from celery import Celery
 import subprocess
-from celery.signals import task_success
 import sys
 import psycopg2
 from google.cloud import storage, pubsub_v1
 from dotenv import load_dotenv
 import os
 sys.path.append('../')
-#from back.src.models.task import TaskStatus
 load_dotenv()
-#celery_app = Celery('tasks', broker=os.getenv("REDIS_URL"))
 
 DB_NAME = os.getenv("DB_NAME")
 DB_USER = os.getenv("DB_USER")
@@ -19,8 +15,6 @@ DB_HOST = os.getenv("DB_HOST")
 storage_client = storage.Client()
 bucket_name = "cloud_entrega_3"
 
-# subscriber = pubsub_v1.SubscriberClient()
-# subscription_path = subscriber.subscription_path('my-cloud-project-418900', 'projects/my-cloud-project-418900/subscriptions/file_conversion-sub')
 
 def callback(message):
     # Process the incoming message
