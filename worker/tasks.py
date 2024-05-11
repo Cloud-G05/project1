@@ -64,10 +64,10 @@ def convert_to_pdf(input_file, output_file, task_id):
     if input_file.split(".")[-1] == "xlsx":
         wb = pd.read_excel(input_file.split("/")[-1])
         wb.to_html(output_file.split("/")[-1].split(".")[0]+".html")
-        pypandoc.convert_file(output_file.split("/")[-1].split(".")[0]+".html", 'pdf', outputfile=output_file.split("/")[-1], extra_args=['--pdf-engine=pdflatex'])
+        pypandoc.convert_file(output_file.split("/")[-1].split(".")[0]+".html", 'pdf', outputfile=output_file.split("/")[-1])
         os.remove(output_file.split('/')[-1].split(".")[0]+".html")
     else:
-        pypandoc.convert_file(input_file.split("/")[-1], 'pdf', outputfile=output_file.split("/")[-1], extra_args=['--pdf-engine=pdflatex'])
+        pypandoc.convert_file(input_file.split("/")[-1], 'pdf', outputfile=output_file.split("/")[-1])
     #subprocess.run(['unoconv', '-f', 'pdf', '-o', output_file.split('/')[-1], input_file.split("/")[-1]], check=True)
     #converted_file = subprocess.run(['unoconv', '-f', 'pdf', '-'], input=input_blob.download_as_bytes(), capture_output=True, check=True)
     
