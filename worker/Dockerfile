@@ -21,4 +21,4 @@ COPY . /worker
 
 WORKDIR /worker
 
-CMD ["python3","tasks.py"]
+CMD ["python","tasks.py"]
