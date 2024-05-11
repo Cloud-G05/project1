@@ -6,6 +6,10 @@ from dotenv import load_dotenv
 import os
 import pandas as pd
 import pypandoc
+import base64
+
+from cloudevents.http import CloudEvent
+import functions_framework
 sys.path.append('../')
 load_dotenv()
 
@@ -17,10 +21,10 @@ DB_HOST = os.getenv("DB_HOST")
 storage_client = storage.Client()
 bucket_name = "cloud_entrega_3"
 
-
-def callback(message):
+@functions_framework.cloud_event
+def suscribe(message:CloudEvent):
     # Process the incoming message
-    message_data = message.data.decode('utf-8')
+    message_data = base64.b64decode(message.data["message"]["data"]).decode()
 
     print(f"Received message: {message_data}")
     mensaje_split = message_data.split(' ')
@@ -103,9 +107,9 @@ def convert_to_pdf(input_file, output_file, task_id):
 # while True:
 #     pass
 
-with pubsub_v1.SubscriberClient() as subscriber:
-    future = subscriber.subscribe('projects/my-cloud-project-418900/subscriptions/file_conversion-sub', callback)
-    try:
-        future.result()
-    except KeyboardInterrupt:
-        future.cancel()
+# with pubsub_v1.SubscriberClient() as subscriber:
+#     future = subscriber.subscribe('projects/my-cloud-project-418900/subscriptions/file_conversion-sub', callback)
+#     try:
+#         future.result()
+#     except KeyboardInterrupt:
+#         future.cancel()

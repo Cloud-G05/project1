@@ -16,3 +16,5 @@ pypandoc == 1.13
 pypandoc-binary == 1.13
 pandas==2.2.2
 openpyxl==3.1.2
+cloudevents == 1.10.1
+functions-framework == 3.5.0
