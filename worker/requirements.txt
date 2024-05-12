@@ -10,11 +10,4 @@ async-timeout==4.0.3
 psycopg2-binary==2.9.9
 unoconv
 python-dotenv==0.19.1
-google-cloud-pubsub==2.16.0
 google-cloud-storage==2.9.0
-pypandoc == 1.13
-pypandoc-binary == 1.13
-pandas==2.2.2
-openpyxl==3.1.2
-cloudevents == 1.10.1
-functions-framework == 3.5.0

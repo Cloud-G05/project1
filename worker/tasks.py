@@ -1,16 +1,31 @@
 import subprocess
+from fastapi import FastAPI, status, Request
+from fastapi.responses import RedirectResponse, JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
 import sys
-import psycopg2
-from google.cloud import storage, pubsub_v1
-from dotenv import load_dotenv
 import os
-import pandas as pd
-import pypandoc
-import base64
+from dotenv import load_dotenv
+import psycopg2
+from google.cloud import storage
 
-from cloudevents.http import CloudEvent
-import functions_framework
-sys.path.append('../')
+
+app = FastAPI()
+
+
+
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+@app.get("/")
+def root():
+    return RedirectResponse(url="/docs")
+
 load_dotenv()
 
 DB_NAME = os.getenv("DB_NAME")
@@ -21,23 +36,6 @@ DB_HOST = os.getenv("DB_HOST")
 storage_client = storage.Client()
 bucket_name = "cloud_entrega_3"
 
-@functions_framework.cloud_event
-def suscribe(message:CloudEvent):
-    # Process the incoming message
-    message_data = base64.b64decode(message.data["message"]["data"]).decode()
-
-    print(f"Received message: {message_data}")
-    mensaje_split = message_data.split(' ')
-    tarea = mensaje_split[0]
-    input_file_path = mensaje_split[1]
-    output_file_path = mensaje_split[2]
-    task_id = mensaje_split[3]
-       
-    if tarea == 'convert_to_pdf':
-        convert_to_pdf(input_file_path, output_file_path, task_id)
-
-    # Acknowledge the message
-    message.ack()
 
 def update_task_status(task_id, status):#
     try:
@@ -58,58 +56,32 @@ def update_task_status(task_id, status):#
         cursor.close()
         conn.close()
 
-#@celery_app.task(name='tasks.convert_to_pdf')
-def convert_to_pdf(input_file, output_file, task_id):
-    bucket = storage_client.bucket(bucket_name)
-    input_blob = bucket.blob(input_file)
-    input_blob.download_to_filename(input_file.split("/")[-1])
-    # Execute the unoconv command to convert the PPTX file to PDF
+@app.post('/convert')
+def convert_pdf(input_file: str, output_file: str, task_id: str):
+    try:
+        bucket = storage_client.bucket(bucket_name)
+        input_blob = bucket.blob(input_file)
+        input_blob.download_to_filename(input_file.split("/")[-1])
+        # Execute the unoconv command to convert the PPTX file to PDF
+        subprocess.run(['unoconv', '-f', 'pdf', '-o', output_file.split('/')[-1], input_file.split("/")[-1]], check=True)
+        #converted_file = subprocess.run(['unoconv', '-f', 'pdf', '-'], input=input_blob.download_as_bytes(), capture_output=True, check=True)
+        
+        print(f"Conversion completed: {input_file} -> {output_file}")
 
-    if input_file.split(".")[-1] == "xlsx":
-        wb = pd.read_excel(input_file.split("/")[-1])
-        wb.to_html(output_file.split("/")[-1].split(".")[0]+".html")
-        pypandoc.convert_file(output_file.split("/")[-1].split(".")[0]+".html", 'pdf', outputfile=output_file.split("/")[-1])
-        os.remove(output_file.split('/')[-1].split(".")[0]+".html")
-    else:
-        pypandoc.convert_file(input_file.split("/")[-1], 'pdf', outputfile=output_file.split("/")[-1])
-    #subprocess.run(['unoconv', '-f', 'pdf', '-o', output_file.split('/')[-1], input_file.split("/")[-1]], check=True)
-    #converted_file = subprocess.run(['unoconv', '-f', 'pdf', '-'], input=input_blob.download_as_bytes(), capture_output=True, check=True)
+        output_blob = bucket.blob(output_file)
+        #output_blob.upload_from_string(converted_file.stdout)
+        output_blob.upload_from_filename(output_file.split('/')[-1])
+
+        print(f'Task {task_id} completed successfully.')
+        # Update the task status to PROCESSED
+        update_task_status(task_id, "PROCESSED")
+
+        os.remove(output_file.split('/')[-1])
+        os.remove(input_file.split('/')[-1])
+        return output_file
+    except subprocess.CalledProcessError as e:
+        print(f"Conversion failed: {e}")
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}")
+
     
-    #print(f"Conversion completed: {input_file} -> {output_file}")
-
-    output_blob = bucket.blob(output_file)
-    #output_blob.upload_from_string(converted_file.stdout)
-    output_blob.upload_from_filename(output_file.split('/')[-1])
-
-    print(f'Task {task_id} completed successfully.')
-    # Update the task status to PROCESSED
-    update_task_status(task_id, "PROCESSED")
-
-    os.remove(output_file.split('/')[-1])
-    os.remove(input_file.split('/')[-1])
-    return output_file
-
-
-# @task_success.connect
-# def handle_task_success(sender, **kwargs):
-#     if sender:
-#         task_id = sender.request.id
-#         print(f'Task {task_id} completed successfully.')
-#         update_task_status(task_id, "PROCESSED")
-#     else:
-#         print('No sender object found.')
-
-
-# # Subscribe to the topic and attach the callback function
-# subscriber.subscribe(subscription_path, callback=callback)
-# # Start the subscriber
-# print("Listening for messages...")
-# while True:
-#     pass
-
-# with pubsub_v1.SubscriberClient() as subscriber:
-#     future = subscriber.subscribe('projects/my-cloud-project-418900/subscriptions/file_conversion-sub', callback)
-#     try:
-#         future.result()
-#     except KeyboardInterrupt:
-#         future.cancel()
