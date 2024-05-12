@@ -15,8 +15,10 @@ WORKDIR /worker
 COPY ./requirements.txt /worker/requirements.txt
 RUN pip3 install --no-cache-dir -r /worker/requirements.txt
 
+EXPOSE 8000
+
 # Copy the rest of the application
 COPY . /worker
 
 # Start the FastAPI application
-CMD ["uvicorn", "tasks:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["sh", "-c", "python -m uvicorn tasks:app --host 0.0.0.0 --port 8000"]
