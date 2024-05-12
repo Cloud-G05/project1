@@ -4,7 +4,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get upgrade -y
 
-RUN apt-get install -y python3.11 python3-pip
+RUN apt-get install -y python3 python3-pip
 
 RUN apt-get update && apt-get upgrade -y
 
