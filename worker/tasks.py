@@ -63,7 +63,7 @@ def convert_pdf(input_file: str, output_file: str, task_id: str):
         input_blob = bucket.blob(input_file)
         input_blob.download_to_filename(input_file.split("/")[-1])
         # Execute the unoconv command to convert the PPTX file to PDF
-        subprocess.run(['libreoffice', '--headless', '--convert-to','pdf', output_file.split('/')[-1], input_file.split("/")[-1]], check=True)
+        subprocess.run(['soffice', '--headless', '--convert-to','pdf', output_file.split('/')[-1], input_file.split("/")[-1]], check=True)
         #converted_file = subprocess.run(['unoconv', '-f', 'pdf', '-'], input=input_blob.download_as_bytes(), capture_output=True, check=True)
         
         print(f"Conversion completed: {input_file} -> {output_file}")
