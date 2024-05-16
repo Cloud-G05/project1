@@ -33,7 +33,7 @@ DB_USER = os.getenv("DB_USER")
 DB_PASSWORD = os.getenv("DB_PASSWORD")
 DB_HOST = os.getenv("DB_HOST")
 
-storage_client = storage.Client.from_service_account_json("my-cloud-project-418900-da86e03cd797.json")
+storage_client = storage.Client()
 bucket_name = "cloud_entrega_3"
 
 
