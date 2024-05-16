@@ -33,7 +33,7 @@ DB_USER = os.getenv("DB_USER")
 DB_PASSWORD = os.getenv("DB_PASSWORD")
 DB_HOST = os.getenv("DB_HOST")
 
-storage_client = storage.Client()
+storage_client = storage.Client.from_service_account_json("my-cloud-project-418900-da86e03cd797.json")
 bucket_name = "cloud_entrega_3"
 
 
@@ -63,7 +63,7 @@ def convert_pdf(input_file: str, output_file: str, task_id: str):
         input_blob = bucket.blob(input_file)
         input_blob.download_to_filename(input_file.split("/")[-1])
         # Execute the unoconv command to convert the PPTX file to PDF
-        subprocess.run(['unoconv', '-f', 'pdf', '-o', output_file.split('/')[-1], input_file.split("/")[-1]], check=True)
+        subprocess.run(['libreoffice', '--headless', '--convert-to','pdf', output_file.split('/')[-1], input_file.split("/")[-1]], check=True)
         #converted_file = subprocess.run(['unoconv', '-f', 'pdf', '-'], input=input_blob.download_as_bytes(), capture_output=True, check=True)
         
         print(f"Conversion completed: {input_file} -> {output_file}")
