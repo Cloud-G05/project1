@@ -34,17 +34,20 @@ const Register = () => {
             return;
         }
 
-        const response = await fetch("http://34.110.178.166/users/", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                username: username,
-                password: password,
-                email: email,
-            }),
-        });
+        const response = await fetch(
+            "https://back-mhdc5bmumq-uk.a.run.app/users/",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    username: username,
+                    password: password,
+                    email: email,
+                }),
+            }
+        );
 
         if (response.status === 201) {
             window.location.href = "/";

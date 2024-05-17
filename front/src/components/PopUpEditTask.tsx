@@ -126,20 +126,23 @@ interface createTaskProps {
 }
 
 const createTask = async ({ newTask, reloadTasks }: createTaskProps) => {
-    const response = await fetch(`http://34.110.178.166/tasks/`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-            Accept: "application/json",
-        },
-        body: JSON.stringify({
-            input_file_path: newTask.input_file_path,
-            name: newTask.name,
-            converted_file_ext: newTask.converted_file_ext,
-            user_email: newTask.user_email,
-        }),
-    });
+    const response = await fetch(
+        `https://back-mhdc5bmumq-uk.a.run.app/tasks/`,
+        {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+                Accept: "application/json",
+            },
+            body: JSON.stringify({
+                input_file_path: newTask.input_file_path,
+                name: newTask.name,
+                converted_file_ext: newTask.converted_file_ext,
+                user_email: newTask.user_email,
+            }),
+        }
+    );
 
     if (response.status === 201) {
         const data = await response.json();
@@ -166,13 +169,16 @@ interface createFileProps {
 const uploadFile = async ({ newFile, reloadTasks }: createFileProps) => {
     const formData = new FormData(); // Crear objeto FormData
     formData.append("file", newFile);
-    const response = await fetch("http://34.110.178.166/files/uploadfile", {
-        method: "POST",
-        headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-        body: formData, // Usar el objeto FormData como cuerpo de la solicitud
-    });
+    const response = await fetch(
+        "https://back-mhdc5bmumq-uk.a.run.app/files/uploadfile",
+        {
+            method: "POST",
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+            body: formData, // Usar el objeto FormData como cuerpo de la solicitud
+        }
+    );
 
     if (response.ok) {
         console.log("Archivo enviado exitosamente.");

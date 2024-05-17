@@ -24,16 +24,19 @@ const LoginPage = () => {
 
     const handleLogin = async () => {
         if (username.includes("@")) {
-            const response = await fetch("http://34.110.178.166/users/login", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    email: username,
-                    password: password,
-                }),
-            });
+            const response = await fetch(
+                "https://back-mhdc5bmumq-uk.a.run.app/users/login",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        email: username,
+                        password: password,
+                    }),
+                }
+            );
 
             if (response.status === 201) {
                 window.location.href = "/home";
@@ -47,16 +50,19 @@ const LoginPage = () => {
                 alert("Email o contraseña incorrectos");
             }
         } else {
-            const response = await fetch("http://34.110.178.166/users/login", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    username: username,
-                    password: password,
-                }),
-            });
+            const response = await fetch(
+                "https://back-mhdc5bmumq-uk.a.run.app/users/login",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        username: username,
+                        password: password,
+                    }),
+                }
+            );
 
             if (response.status === 201) {
                 window.location.href = "/home";

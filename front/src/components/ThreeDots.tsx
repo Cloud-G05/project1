@@ -93,13 +93,16 @@ interface deleteTaskProps {
 }
 
 const deleteTask = async ({ task_id, reloadTasks }: deleteTaskProps) => {
-    const response = await fetch(`http://34.110.178.166/tasks/${task_id}`, {
-        method: "DELETE",
-        headers: {
-            accept: "*/*",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-    });
+    const response = await fetch(
+        `https://back-mhdc5bmumq-uk.a.run.app/tasks/${task_id}`,
+        {
+            method: "DELETE",
+            headers: {
+                accept: "*/*",
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+        }
+    );
     if (response.status === 204) {
         reloadTasks();
     } else {
@@ -110,12 +113,15 @@ const deleteTask = async ({ task_id, reloadTasks }: deleteTaskProps) => {
 const downloadInputFile = async (input_file_path: string) => {
     const fileName = input_file_path.split("/").pop();
     const token = localStorage.getItem("token");
-    const response = await fetch(`http://34.110.178.166/files/${fileName}`, {
-        method: "GET",
-        headers: {
-            Authorization: "Bearer " + token, // Si necesitas enviar un token de autenticación
-        },
-    });
+    const response = await fetch(
+        `https://back-mhdc5bmumq-uk.a.run.app/files/${fileName}`,
+        {
+            method: "GET",
+            headers: {
+                Authorization: "Bearer " + token, // Si necesitas enviar un token de autenticación
+            },
+        }
+    );
 
     if (response.ok) {
         const blob = await response.blob();
@@ -139,12 +145,15 @@ const downloadInputFile = async (input_file_path: string) => {
 const downloadOutputFile = async (output_file_path: string) => {
     const fileName = output_file_path.split("/").pop();
     const token = localStorage.getItem("token");
-    const response = await fetch(`http://34.110.178.166/files/${fileName}`, {
-        method: "GET",
-        headers: {
-            Authorization: "Bearer " + token, // Si necesitas enviar un token de autenticación
-        },
-    });
+    const response = await fetch(
+        `https://back-mhdc5bmumq-uk.a.run.app/files/${fileName}`,
+        {
+            method: "GET",
+            headers: {
+                Authorization: "Bearer " + token, // Si necesitas enviar un token de autenticación
+            },
+        }
+    );
 
     if (response.ok) {
         const blob = await response.blob();
