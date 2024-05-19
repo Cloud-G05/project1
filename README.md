@@ -157,4 +157,53 @@ http://{external_IP_address_VM1}:3000
 
 ### Acclaration
 
-To be able to visualize the update of the task status from UPLOADED to PROCESSED on the frontend, you need to reload the page necessarily (after celery has finished the conversion).
+To be able to visualize the update of the task status from UPLOADED to PROCESSED on the frontend, you need to reload the page necessarily (after the conversion is made).
+
+# project4
+
+Project 4 explanation video: https://youtu.be/pRbf0duZipA
+
+The repository contains both the project's backend and frontend, in the back and front directories, respectively. On the other hand, there's a worker directory, which contains the code for the worker that is used to convert files.
+
+Each directory has its own Dockerfile. These are used to build independent Docker images.
+
+## Build the application
+
+To run the application you have to configure the postgreSQL database in Google CloudSQL, the bucket in Google Cloud Storage and the topic in Google Cloud Pub/Sub.
+
+To run the backend you should create a Cloud Run service that continuously deploys from the GitHub's repository of the project (this one) and configure it to build the Docker image using the Dockerfile in the back directory. This service autoscales from 0 to 5 instances. On the other hand, you should configure the environment variables when creating the service in order to be able to connect to the Cloud SQL database.
+
+To run the worker you should create a Cloud Run service that continuously deploys from the GitHub's repository of the project (this one) and configure it to build the Docker image using the Dockerfile in the worker directory. This service autoscales from 0 to 5 instances. On the other hand, you should configure the environment variables when creating the service in order to be able to connect to the Cloud SQL database. This service converts the files to pdf but in order to know which files and when you have to create a Cloud Functions function that is activated by a Cloud Pub/Sub event (when a message is published to the file_converter topic). This function makes then the petition to the Cloud Run service. The file `tasks.py` contains the api built in Cloud Run and the file `cloud_function.py` contains the function built in Cloud Functions.
+
+The requirements.txt configured for the Cloud Function has the following content:
+
+```bash
+functions-framework==3.*
+requests==2.31.0
+```
+
+Finally, to run the frontend you should create a Cloud Run service that continuously deploys from the GitHub's repository of the project (this one) and configure it to build the Docker image using the Dockerfile in the front directory. This service autoscales from 0 to 5 instances.
+
+## API documentation
+
+The API was built using FastAPI. You can access the API documentation, created automatically using Swagger, by navigating to the following URL:
+
+```bash
+https://back-mhdc5bmumq-uk.a.run.app
+```
+
+### Acclaration
+
+If you want to try out the different services from Swagger, it's important to know that you must first log in. When you log in, the response will contain a token that you need to enter in the Authorize button. On the other hand, if you want to create a task, you first need to use the POST `/files/uploadfile` service where you will upload the file you want to convert. Then, you go to the POST `/tasks/` service where the input_file_path should be `uploads/{file_name}` since that is the path where the file was uploaded in the POST `/files/uploadfile` service.
+
+## Access the application
+
+Once everything is running, you can access the application by opening a web browser and navigating to the following URL:
+
+```bash
+https://front-mhdc5bmumq-uk.a.run.app
+```
+
+### Acclaration
+
+To be able to visualize the update of the task status from UPLOADED to PROCESSED on the frontend, you need to reload the page necessarily (after the conversion is made).
